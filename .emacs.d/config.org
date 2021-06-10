@@ -1,0 +1,992 @@
+
+#+TITLE: DT's GNU Emacs Config
+#+AUTHOR: Derek Taylor (DT)
+#+DESCRIPTION: DT's personal Emacs config.
+#+STARTUP: content
+#+EXPORT_FILE_NAME: ~/Org/html/config.html
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+#+OPTIONS: num:nil ^:{}
+
+
+
+* ABOUT THIS CONFIG
+  Mark's personal Emacs config as a literative / org-moode document. Some useful notes:
+
+  - Large portions stolen from DistroTube: https://gitlab.com/dwt1/dotfiles/-/blob/master/.emacs.d.gnu/config.org
+  - Created to avoid Evil mode since I'm to old to learn all the vim commands (and I noticed that Emacs
+    commands still sit in muscle memory after 15 years)
+  -
+
+
+
+
+* INITIALIZING
+
+Bootstrapping of this config is done in init.el and bootstrap.el - looading melpa, use-package and some basic stuff.
+
+
+** SANE DEFAULTS
+
+This is stuff that could almost be in bootstrap.el...
+
+#+begin_src emacs-lisp
+
+;;; Useful Defaults - just make things a bit more like a boring modern editor...
+(setq-default cursor-type 'bar)           ; Line-style cursor similar to other text editors
+(setq inhibit-startup-screen t)           ; Disable startup screen
+(setq initial-scratch-message nil)         ; Make *scratch* buffer blank
+(setq inhibit-startup-message t)
+(setq echo-keystrokes 0.1)
+(setq-default frame-title-format '("%b")) ; Make window title the buffer name
+(setq sentence-end-double-space nil)
+(setq ring-bell-function 'ignore)         ; Disable bell sound
+(fset 'yes-or-no-p 'y-or-n-p)             ; y-or-n-p makes answering questions faster
+(setq linum-format "%4d ")                ; Line number format
+(setq display-time-24hr-format t)
+(column-number-mode)
+(delete-selection-mode 1)                 ; Selected text will be overwritten when you start typing
+(setq use-dialog-box nil)                 ;; Prompts should go in the minibuffer, not in a GUI.
+(setq-default indent-tabs-mode nil)       ; never use tabs!
+(set-charset-priority 'unicode)           ; prioritise utf-8
+(setq locale-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-selection-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
+(setq default-process-coding-system '(utf-8-unix . utf-8-unix))
+(global-auto-revert-mode t)               ; Auto-update buffer if file has changed on disk
+(use-package undo-tree                    ; Enable undo-tree, sane undo/redo behavior
+  :init (global-undo-tree-mode))
+(add-hook 'before-save-hook
+	  'delete-trailing-whitespace)    ; Delete trailing whitespace on save
+;;(add-hook 'prog-mode-hook                 ; Show line numbers in programming modes
+;;          (if (and (fboundp 'display-line-numbers-mode) (display-graphic-p))
+;;              #'display-line-numbers-mode
+;;            #'linum-mode))
+
+
+#+end_src
+
+
+*** Basic navigation and editing - DISABLED
+
+   Enable IDO mode
+
+   #+BEGIN_SRC emacs-lisp
+   ;;(setq ido-enable-flex-matching t)
+   ;;(ido-mode 1)
+   ;;(setq ido-everywhere t)
+   #+END_SRC
+
+
+
+*** Keybindings
+
+#+begin_src emacs-lisp
+
+(setq mac-function-modifier 'meta)
+(setq mac-option-modifier nil)
+
+(global-set-key (kbd "C-z") 'undo)  ; nice to be a bit lazy
+
+#+end_src
+
+
+
+* VISUALS
+** Theme
+A theme maketh the editor - Doom Emacs has a great set of themes, but having that many themes in a package might possibly slow things down a tad?
+
+Going for [[https://github.com/arcticicestudio/nord-emacs][Nord theme]] directly for now (have also tried gruvvbox, solarized, etc).
+
+#+begin_src emacs-lisp
+;;(use-package doom-themes)
+;;(setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+;;      doom-themes-enable-italic t) ; if nil, italics is universally disabled
+;;(load-theme 'doom-nord t)
+
+(use-package nord-theme)
+(load-theme 'nord t)
+
+;; Use `nord4` from Nord's "Snow Storm" palette as background color.
+(setq nord-region-highlight "snowstorm")
+#+end_src
+
+
+
+** Icons
+This is an icon set that can be used with dashboard, dired, ibuffer and other Emacs programs.
+
+All-the-icons seems to be the only real icon set being updated for Emacs.
+
+#+begin_src emacs-lisp
+(use-package all-the-icons)
+#+end_src
+
+
+** Dashboard
+Emacs Dashboard is an extensible startup screen showing you recent files, bookmarks, agenda items
+and an Emacs banner.
+
+*** Configuring Dashboard
+
+#+begin_src emacs-lisp
+(use-package dashboard
+  :init      ;; tweak dashboard config before loading it
+  (setq dashboard-set-heading-icons nil)
+  (setq dashboard-set-file-icons nil)
+  (add-hook 'after-init-hook 'dashboard-refresh-buffer)
+  (add-hook 'dashboard-mode-hook 'my/dashboard-banner)
+  (setq dashboard-banner-logo-title "Emacs Is More Than A Text Editor!")
+  (setq dashboard-startup-banner 'logo) ;; use standard emacs logo as banner
+  ;;(setq dashboard-startup-banner "~/.emacs.d/emacs-dash.png")  ;; use custom image as banner
+  (setq dashboard-center-content t) ;; set to 't' for centered content
+  (setq dashboard-items '((recents . 5)
+                          (agenda . 5 )
+                          (bookmarks . 3)
+                          (projects . 10)
+                          (registers . 3)))
+  :config
+  (dashboard-setup-startup-hook)
+  (dashboard-modify-heading-icons '((recents . "file-text")
+			      (bookmarks . "book"))))
+
+#+end_src
+
+
+*** Dashboard in Emacsclient
+This setting ensures that emacsclient always opens on *dashboard* rather than *scratch*.
+
+#+begin_src emacs-lisp
+(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+#+end_src
+
+
+
+** Emojis
+Emojify is an Emacs extension to display emojis. It can display github style emojis like :smile: or plain ascii ones like :).
+
+#+Begin_src emacs-lisp
+(use-package emojify
+  :hook (after-init . global-emojify-mode))
+#+end_src
+
+
+** Window management
+
+*** Enable winner mode to quickly restore window configurations
+
+This is really nice - undo / redo for window layout.
+
+C-c left-arrow
+C-c right-arrow
+
+to undo / redo!
+
+#+begin_src emacs-lisp
+(winner-mode 1)
+#+end_src
+
+*** Shackle to make sure all windows are nicely positioned.
+
+#+begin_src emacs-lisp
+(use-package shackle
+  :init
+  (setq shackle-default-alignment 'below
+        shackle-default-size 0.4
+        shackle-rules '((help-mode           :align below :select t)
+                        (helpful-mode        :align below)
+                        (compilation-mode    :select t   :size 0.25)
+                        ("*compilation*"     :select nil :size 0.25)
+                        ("*ag search*"       :select nil :size 0.25)
+                        ("*Flycheck errors*" :select nil :size 0.25)
+                        ("*Warnings*"        :select nil :size 0.25)
+                        ("*Error*"           :select nil :size 0.25)
+                        ("*Org Links*"       :select nil :size 0.25)
+                        (magit-status-mode                :align bottom :size 0.5  :inhibit-window-quit t)
+                        (magit-log-mode                   :same t                  :inhibit-window-quit t)
+                        (magit-commit-mode                :ignore t)
+                        (magit-diff-mode     :select nil  :align left   :size 0.5)
+                        (git-commit-mode                  :same t)
+                        (vc-annotate-mode                 :same t)
+                        ))
+  :config
+  (shackle-mode 1))
+#+end_src
+
+*** TODO investigate Purpose as alternative to Shackle
+https://github.com/bmag/emacs-purpose
+some people mean shackle is old and no longer needed as newer built-in emacs functionality has improved..
+
+*** Centaur - DISABLED
+
+#+begin_src emacs-lisp
+;(use-package centaur-tabs
+;  :demand
+;  :config
+;  (centaur-tabs-mode t)
+;  :bind
+;  ("C-<prior>" . centaur-tabs-backward)
+;  ("C-<next>" . centaur-tabs-forward))
+
+;(setq centaur-tabs-style "slant")
+;;(setq centaur-tabs-height 22)
+;(setq centaur-tabs-set-icons t)
+;(setq centaur-tabs-gray-out-icons 'buffer)
+;(setq centaur-tabs-set-bar 'over)
+
+#+end_src
+
+
+** Fonts
+Defining our fonts.
+
+
+
+*** Setting The Font Face
+
+#+begin_src emacs-lisp
+(set-face-attribute 'default nil
+  :font "Hack"
+  :height 150
+  :weight 'medium)
+(set-face-attribute 'variable-pitch nil
+  :font "SF Pro"
+  :height 180
+  :weight 'medium)
+(set-face-attribute 'fixed-pitch nil
+  :font "Hack"
+  :height 150
+  :weight 'medium)
+
+;; Makes commented text and keywords italics.
+;; This is working in emacsclient but not emacs.
+;; Your font must have an italic face available.
+(set-face-attribute 'font-lock-comment-face nil
+  :slant 'italic)
+(set-face-attribute 'font-lock-keyword-face nil
+  :slant 'italic)
+
+;; Uncomment the following line if line spacing needs adjusting.
+(setq-default line-spacing 0.1)
+
+;; Needed if using emacsclient. Otherwise, your fonts will be smaller than expected.
+;;(add-to-list 'default-frame-alist '(font . "Hack-14"))
+
+#+end_src
+
+#+RESULTS:
+: 0.1
+
+
+
+
+** GUI Tweaks
+Let's make GNU Emacs look a little better.
+
+*** Display Line Numbers and Truncated Lines
+
+Don't use a 3rd party - Emacs has a great built-in line number mode.
+
+#+begin_src emacs-lisp
+(global-display-line-numbers-mode 1)
+(global-visual-line-mode t)
+
+(setq display-line-numbers-type "relative")
+
+#+end_src
+
+#+RESULTS:
+: relative
+
+
+
+*** Change Modeline To Doom's Modeline
+
+Just a simple default modeline:
+
+#+begin_src emacs-lisp
+(use-package doom-modeline)
+(doom-modeline-mode 1)
+;(setq doom-modeline-height 25)
+;(setq doom-modeline-minor-modes nil)
+;(setq doom-modeline-enable-word-count nil)
+;(setq doom-modeline-env-version nil)
+#+end_src
+
+#+RESULTS:
+
+
+
+
+* EDITING
+
+** Undo tree
+*** TODO Should really look into removing undo-tree and relying on kill buffers
+
+Haven't used this live yet - so might be waste of loading:
+
+#+Begin_src emacs-lisp
+(use-package undo-tree
+  :diminish
+  :bind (("C-c _" . undo-tree-visualize))
+  :config
+  (global-undo-tree-mode +1)
+  (unbind-key "M-_" undo-tree-map))
+#+end_src
+
+
+
+* IDE
+
+** FILE MANAGER
+
+#+begin_src emacs-lisp
+(use-package all-the-icons-dired)
+#+end_src
+
+
+
+
+
+** IVY (COUNSEL/SWIPER)
+Ivy, counsel and swiper are a generic completion mechanism for Emacs.  Ivy-rich allows us to add descriptions alongside the commands in M-x.
+
+*** TODO check all ivy settings - most probably aren't needed..
+*** Installing Ivy And Basic Setup
+
+#+begin_src emacs-lisp
+(use-package counsel
+  :after ivy
+  :config (counsel-mode))
+(global-set-key "\C-x\ \C-r" 'counsel-recentf)
+
+(use-package ivy
+  :defer 0.1
+  :diminish
+  :custom
+  (setq ivy-count-format "(%d/%d) ")
+  (setq ivy-use-virtual-buffers t)
+  (setq enable-recursive-minibuffers t)
+  :config
+  (ivy-mode))
+
+(use-package ivy-rich
+  :after ivy
+  :custom
+  (ivy-virtual-abbreviate 'full
+   ivy-rich-switch-buffer-align-virtual-buffer t
+   ivy-rich-path-style 'abbrev)
+  :config
+  (ivy-set-display-transformer 'ivy-switch-buffer
+                               'ivy-rich-switch-buffer-transformer)
+  (ivy-rich-mode 1)) ;; this gets us descriptions in M-x.
+
+(use-package swiper
+  :after ivy
+  :bind (("C-s" . swiper)
+         ("C-r" . swiper)))
+#+end_src
+
+
+#+begin_src emacs-lisp
+(setq ivy-initial-inputs-alist nil)
+
+(setq ivy-re-builders-alist
+      '((swiper . ivy--regex-plus)
+        (swiper-isearch . regexp-quote)
+        ;; (counsel-git . ivy--regex-plus)
+        ;; (counsel-ag . ivy--regex-plus)
+        (counsel-rg . ivy--regex-plus)
+        (t      . ivy--regex-fuzzy)))   ;; enable fuzzy searching everywhere except for Swiper and ag
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package smex)
+
+(use-package ivy-rich
+  :config
+  (ivy-rich-mode 1)
+  (setq ivy-rich-path-style 'abbrev)) ;; To abbreviate paths using abbreviate-file-name (e.g. replace “/home/username” with “~”
+#+end_src
+
+#+begin_src emacs-lisp
+;;(use-package selectrum)
+;;(selectrum-mode +1)
+#+end_src
+
+
+
+*** Making M-x Great Again!
+The following line removes the annoying '^' in things like counsel-M-x and other ivy/counsel prompts.  The default '^' string means that if you type something immediately after this string only completion candidates that begin with what you typed are shown.  Most of the time, I'm searching for a command without knowing what it begins with though.
+
+#+begin_src emacs-lisp-disabled
+(setq ivy-initial-inputs-alist nil)
+#+end_src
+
+Smex is a package the makes M-x remember our history.  Now M-x will show our last used commands first.
+#+begin_src emacs-lisp-disabled
+(use-package smex)
+(smex-initialize)
+#+end_src
+
+
+
+
+*** Ivy-posframe
+Ivy-posframe is an ivy extension, which lets ivy use posframe to show its candidate menu.  Some of the settings below involve:
++ ivy-posframe-display-functions-alist -- sets the display position for specific programs
++ ivy-posframe-height-alist -- sets the height of the list displayed for specific programs
+
+Available functions (positions) for 'ivy-posframe-display-functions-alist'
++ ivy-posframe-display-at-frame-center
++ ivy-posframe-display-at-window-center
++ ivy-posframe-display-at-frame-bottom-left
++ ivy-posframe-display-at-window-bottom-left
++ ivy-posframe-display-at-frame-bottom-window-center
++ ivy-posframe-display-at-point
++ ivy-posframe-display-at-frame-top-center
+
+=NOTE:= If the setting for 'ivy-posframe-display' is set to 'nil' (false), anything that is set to 'ivy-display-function-fallback'
+will just default to their normal position in Doom Emacs (usually a bottom split).  However, if this is set to 't' (true), then
+the fallback position will be centered in the window.
+
+#+begin_src emacs-lisp
+(use-package ivy-posframe
+  :init
+  (setq ivy-posframe-display-functions-alist
+    '((swiper                     . ivy-posframe-display-at-frame-top-center)
+      (complete-symbol            . ivy-posframe-display-at-point)
+      (counsel-M-x                . ivy-posframe-display-at-frame-bottom-window-center)
+      (counsel-esh-history        . ivy-posframe-display-at-window-center)
+      (counsel-describe-function  . ivy-display-function-fallback)
+      (counsel-describe-variable  . ivy-display-function-fallback)
+      (counsel-find-file          . ivy-display-function-fallback)
+      (counsel-recentf            . ivy-display-function-fallback)
+      (counsel-register           . ivy-posframe-display-at-frame-bottom-window-center)
+      (dmenu                      . ivy-posframe-display-at-frame-top-center)
+      (nil                        . ivy-posframe-display))
+    ivy-posframe-height-alist
+    '((swiper . 12)
+      (dmenu . 20)
+      (t . 10)))
+  :config
+  (ivy-posframe-mode t)) ; 1 enables posframe-mode, 0 disables it.
+
+(setq ivy-posframe-parameters
+      '((left-fringe . 8)
+        (right-fringe . 8)))
+
+(set-face-attribute 'ivy-posframe nil :foreground "gainsboro" :background "#14171c")
+#+end_src
+
+
+
+
+** LANGUAGE SUPPORT
+Adding packages for programming langauges, so we can have nice things like syntax highlighting.
+
+#+begin_src emacs-lisp
+(use-package python-mode)
+(use-package markdown-mode)
+#+end_src
+
+
+
+
+** MAGIT
+A git client for Emacs.  Often cited as a killer feature for Emacs.
+
+#+begin_src emacs-lisp
+(use-package magit
+  :config
+  (global-set-key (kbd "M-g") 'magit-status))
+ #+end_src
+
+
+
+
+* NEOTREE
+Neotree is a file tree viewer.  When you open neotree, it jumps to the current file thanks to neo-smart-open.
+The neo-window-fixed-size setting makes the neotree width be adjustable.
+
+NeoTree provides following themes: classic, ascii, arrow, icons, and nerd.
+
+Theme can be configed by setting "two" themes for neo-theme: one for the GUI and one for the terminal.
+
+
+#+BEGIN_SRC emacs-lisp
+;; Function for setting a fixed width for neotree.
+;; Defaults to 25 but I make it a bit longer (35) in the 'use-package neotree'.
+(defcustom neo-window-width 25
+  "*Specifies the width of the NeoTree window."
+  :type 'integer
+  :group 'neotree)
+
+(use-package neotree
+  :config
+  (setq neo-smart-open t
+        neo-window-width 30
+        neo-theme (if (display-graphic-p) 'icons 'arrow)
+        ;;neo-window-fixed-size nil
+        inhibit-compacting-font-caches t
+        projectile-switch-project-action 'neotree-projectile-action)
+        ;; truncate long file names in neotree
+        (add-hook 'neo-after-create-hook
+           #'(lambda (_)
+               (with-current-buffer (get-buffer neo-buffer-name)
+                 (setq truncate-lines t)
+                 (setq word-wrap nil)
+                 (make-local-variable 'auto-hscroll-mode)
+                 (setq auto-hscroll-mode nil)))))
+
+;; show hidden files
+(setq-default neo-show-hidden-files t)
+
+#+END_SRC
+
+
+* ORG MODE
+Org Mode is =THE= killer feature within Emacs.  But it does need some tweaking.
+
+** Defining A Few Things
+#+begin_src emacs-lisp
+(add-hook 'org-mode-hook 'org-indent-mode)
+(setq org-directory "~/Dropbox/org/"
+      org-agenda-files '("~/Dropbox/org-roam/")
+      org-default-notes-file (expand-file-name "notes.org" org-directory)
+      org-ellipsis " ≫ "
+      org-startup-indented t
+      org-log-done 'time
+      org-return-follows-link  t
+      org-journal-dir "~/Dropbox/org-roam/daily/"
+      org-journal-date-format "%Y-%m-%d (%A) "
+      org-journal-file-format "%Y-%m-%d.org"
+      org-hide-emphasis-markers nil)
+;; (setq org-ellipsis "⚡⚡⚡");; ⤵
+(setq org-src-preserve-indentation nil
+      org-src-tab-acts-natively t
+      org-edit-src-content-indentation 0)
+
+#+end_src
+
+#+RESULTS:
+: 0
+
+
+
+#+begin_src emacs-lisp
+
+(custom-set-faces
+ '(line-number-current-line ((t (:inherit default :background "#5E81AC"))))
+ '(org-block-begin-line
+   ((t (:foreground "#81A1C1" :background "#434C5E"))))
+ '(org-block
+   ((t (:background "#3B4252"))))
+ '(org-block-end-line
+   ((t (:foreground "#81A1C1" :background "#434C5E"))))
+ )
+
+
+#+end_src
+
+#+RESULTS:
+
+** Easier code bock for literate config
+
+  While writing this configuration file in Org mode, I have to write code blocks all the time. Org has templates, so doing =<s TAB= creates a source code block. Here I create a custom template for emacs-lisp specifically. So, =<el TAB= creates the Emacs lisp code block and puts the cursor inside.
+
+  #+BEGIN_SRC emacs-lisp
+      (eval-after-load 'org
+        '(progn
+          (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+          (add-to-list 'org-structure-template-alist '("py" . "src python"))
+          )
+        )
+  #+END_SRC
+
+
+** Enabling Org Bullets and fonts
+Org-bullets gives us attractive bullets rather than asterisks.
+
+#+begin_src emacs-lisp
+(use-package org-bullets)
+(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+#+end_src
+
+
+#+RESULTS:
+
+
+** Org Link Abbreviations
+This allows for the use of abbreviations that will get expanded out into a lengthy URL.
+
+#+begin_src emacs-lisp
+;; An example of how this works.
+;; [[arch-wiki:Name_of_Page][Description]]
+(setq org-link-abbrev-alist    ; This overwrites the default Doom org-link-abbrev-list
+        '(("google" . "http://www.google.com/search?q=")
+          ("arch-wiki" . "https://wiki.archlinux.org/index.php/")
+          ("ddg" . "https://duckduckgo.com/?q=")
+          ("wiki" . "https://en.wikipedia.org/wiki/")))
+#+end_src
+
+** Org Todo Keywords
+This lets us create the various TODO tags that we can use in Org.
+
+#+begin_src emacs-lisp
+  (setq org-todo-keywords        ; This overwrites the default Doom org-todo-keywords
+          '((sequence
+             "TODO(t)"           ; A task that is ready to be tackled
+             "PROJ(p)"           ; A project that contains other tasks
+             "DOING(g)"           ; Something is holding up this task
+             "STALLED(w)"           ; Something is holding up this task
+             "TESTING(t)"           ; Something is holding up this task
+             "|"                 ; The pipe necessary to separate "active" states and "inactive" states
+             "DONE(d)"           ; Task has been completed
+             "CANCELLED(c)" )))  ; Task has been cancelled
+#+end_src
+
+#+RESULTS:
+| sequence | TODO(t) | PROJ(p) | DOING(g) | STALLED(w) | TESTING(t) |   |   | DONE(d) | CANCELLED(c) |
+
+** Source Code Block Tag Expansion
+Org-tempo is a package that allows for '<s' followed by TAB to expand to a begin_src tag.  Other expansions available include:
+
+| Typing the below + TAB | Expands to ...                          |
+|------------------------+-----------------------------------------|
+| <a                     | '#+BEGIN_EXPORT ascii' … '#+END_EXPORT  |
+| <c                     | '#+BEGIN_CENTER' … '#+END_CENTER'       |
+| <C                     | '#+BEGIN_COMMENT' … '#+END_COMMENT'     |
+| <e                     | '#+BEGIN_EXAMPLE' … '#+END_EXAMPLE'     |
+| <E                     | '#+BEGIN_EXPORT' … '#+END_EXPORT'       |
+| <h                     | '#+BEGIN_EXPORT html' … '#+END_EXPORT'  |
+| <l                     | '#+BEGIN_EXPORT latex' … '#+END_EXPORT' |
+| <q                     | '#+BEGIN_QUOTE' … '#+END_QUOTE'         |
+| <s                     | '#+BEGIN_SRC' … '#+END_SRC'             |
+| <v                     | '#+BEGIN_VERSE' … '#+END_VERSE'         |
+
+#+begin_src emacs-lisp
+(use-package org-tempo
+  :ensure nil) ;; tell use-package not to try to install org-tempo since it's already there.
+#+end_src
+
+** Source Code Block Syntax Highlighting
+We want the same syntax highlighting in source blocks as in the native language files.
+
+#+begin_src emacs-lisp
+(setq org-src-fontify-natively t
+    org-src-tab-acts-natively t
+    org-confirm-babel-evaluate nil
+    org-edit-src-content-indentation 0)
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((python . t)))
+
+#+end_src
+
+#+RESULTS:
+
+** Automatically Create Table of Contents
+Toc-org helps you to have an up-to-date table of contents in org files without exporting (useful useful for README files on GitHub).  Use :TOC: to create the table.
+
+#+begin_src emacs-lisp
+  (use-package toc-org
+    :commands toc-org-enable
+    :init (add-hook 'org-mode-hook 'toc-org-enable))
+#+end_src
+
+** Make M-RET Not Add Blank Lines
+#+begin_src emacs-lisp
+(setq org-blank-before-new-entry (quote ((heading . nil)
+                                         (plain-list-item . nil))))
+#+end_src
+
+** Org Roam mode - replace Roam Research?!
+
+Install and configure org-roam:
+
+#+begin_src emacs-lisp
+(use-package org-roam
+      :ensure t
+      :hook
+      (after-init . org-roam-mode)
+      :custom
+      (org-roam-directory (file-truename "~/Dropbox/org-roam"))
+      :bind (:map org-roam-mode-map
+              (("C-c n l" . org-roam)
+               ("C-c n f" . org-roam-find-file)
+               ("C-c n g" . org-roam-graph))
+              :map org-mode-map
+              (("C-c n i" . org-roam-insert))
+              (("C-c n I" . org-roam-insert-immediate))))
+#+end_src
+
+
+To build the cache manually, one can run ~M-x org-roam-db-build-cache~. Cache builds may take a while the first time, but is often instantaneous in subsequent runs because it only reprocesses modified files.
+
+*** Org-roam Daily Notes
+
+#+begin_src emacs-lisp
+(setq org-roam-dailies-directory "daily/")
+
+(setq org-roam-dailies-capture-templates
+      '(("d" "default" entry
+         #'org-roam-capture--get-point
+         "* %?"
+         :file-name "daily/%<%Y-%m-%d>"
+         :head "#+title: %<%Y-%m-%d> %A\n\n")))
+
+(bind-key "C-c n t" 'org-roam-dailies-find-today)
+(bind-key "C-c n d" 'org-roam-dailies-find-date)
+(bind-key "C-c n y" 'org-roam-dailies-find-yesterday)
+(bind-key "C-c n b" 'org-roam-switch-to-buffer)
+(bind-key "C-c n x" 'org-roam-buffer-toggle-display)
+
+#+end_src
+
+#+RESULTS:
+: org-roam-buffer-toggle-display
+
+** Org Super Links - DISABLED
+
+Manually installed for now - not part of Melpa.. which might be a sign to not use it?
+
+Disabled for now - generates Melp package error and not sure I want to use it anyway..
+
+#+begin_src emacs-lisp
+;;(use-package org-super-links
+;;  :bind (("C-c s s" . org-super-links-link)
+;;	   ("C-c s l" . org-super-links-store-link)
+;;	   ("C-c s C-l" . org-super-links-insert-link)))
+#+end_src
+
+** Presentation modes - DISABLED
+*** Org-Reveal - export powerpoint like presentations using Reveal.js to HTML
+
+#+begin_src emacs-lisp
+;;(use-package ox-reveal)
+;;(setq org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js")
+#+end_src
+
+*** epresent - present org mode in emacs
+
+To use, Call ~epresent-run~ on an org-buffer.
+https://github.com/eschulte/epresent
+
+
+#+begin_src emacs-lisp
+;;(use-package epresent)
+
+
+#+end_src
+** Org Download (of images)
+
+#+begin_src emacs-lisp
+(use-package org-download)
+
+;; Drag-and-drop to `dired`
+(add-hook 'dired-mode-hook 'org-download-enable)
+#+end_src
+
+
+
+* PERSPECTIVE - DISABLED
+The Perspective package provides multiple named workspaces (or "perspectives") in Emacs, similar to multiple desktops in window managers like Awesome and XMonad.  Each perspective has its own buffer list and its own window layout. This makes it easy to work on many separate projects without getting lost in all the buffers. Switching to a perspective activates its window configuration, and when in a perspective, only its buffers are available.
+
+#+begin_src emacs-lisp
+;;(use-package perspective
+;;  :bind
+;;  ("C-x C-b" . persp-list-buffers)   ; or use a nicer switcher, see below
+;;  :config
+;;  (persp-mode))
+#+end_src
+
+
+* PROJECTILE
+#+begin_src emacs-lisp
+(use-package projectile
+  :config
+  (setq projectile-enable-caching t)
+  (setq projectile-completion-system 'ivy)
+  ;; (define-key projectile-mode-map (kbd "s-P") 'projectile-command-map)
+  (projectile-mode +1))
+#+end_src
+
+
+* HELM -DISABLED
+
+#+begin_quote
+
+#+end_quote
+
+#+begin_src emacs-lisp
+;; (use-package helm-swoop)
+;; (use-package helm
+;;   :preface
+;;   (require 'helm-config)
+;;   :config
+;;   (helm-mode 1)
+;;   (helm-autoresize-mode 1)
+;;   (setq helm-follow-mode-persistent t)
+;;   (global-set-key (kbd "M-x") 'helm-M-x)
+;;   (setq helm-M-x-fuzzy-match t)
+;;   (setq helm-buffers-fuzzy-matching t)
+;;   (setq helm-recentf-fuzzy-match t)
+;;   (setq helm-apropos-fuzzy-match t)
+;;   (setq helm-split-window-inside-p t)
+;;   ;; (global-set-key (kbd "M-y") 1helm-show-kill-ring)
+;;   ;; (global-set-key (kbd "s-b") 'helm-mini)
+;;   ;; (global-set-key (kbd "C-x C-f") 'helm-find-files)
+;;   ;; (global-set-key (kbd "s-f") 'helm-swoop)
+;;   )
+;; (setq helm-swoop-pre-input-function
+;;       (lambda () ""))
+
+;; (use-package helm-projectile
+;;   :config
+;;   (helm-projectile-on))
+
+;; (use-package helm-ag
+;;   :config
+;;   (global-set-key (kbd "s-F") 'helm-projectile-ag))
+
+;; (global-set-key (kbd "s-p") 'helm-projectile-find-file)
+#+end_src
+
+
+* SCROLLING
+
+Emacs' default scrolling is annoying because of the sudden half-page jumps.  Also, I wanted to adjust the scrolling speed.
+
+#+begin_src emacs-lisp
+;;(setq scroll-conservatively 101) ;; value greater than 100 gets rid of half page jumping
+;;(setq mouse-wheel-scroll-amount '(0.001 ((shift) . 5))) ;; how many lines at a time
+;;(setq mouse-wheel-progressive-speed nil) ;; accelerate scrolling
+;;(setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+#+end_src
+
+Nicer scrolling behaviour. Thanks to [[https://zeekat.nl/articles/making-emacs-work-for-me.html][https://zeekat.nl/articles/making-emacs-work-for-me.html]]
+
+   #+BEGIN_SRC emacs-lisp
+   (setq scroll-margin 1
+      scroll-step 1
+      scroll-conservatively 10000
+      scroll-preserve-screen-position 1)
+
+   (setq mouse-wheel-progressive-speed nil)
+   (setq mouse-wheel-follow-mouse 't)
+   (setq mouse-wheel-scroll-amount '(1 ((shift) . 10)))
+   #+END_SRC
+
+
+
+
+* SHELLS
+In my configs, all of my shells (bash, fish, zsh and the ESHELL) require my shell-color-scripts-git package to be installed.  On Arch Linux, you can install it from the AUR.  Otherwise, go to my shell-color-scripts repository on GitLab to get it.
+
+** Vterm
+Vterm is a terminal emulator within Emacs.  The 'shell-file-name' setting sets the shell to be used in M-x shell, M-x term, M-x ansi-term and M-x vterm.  By default, the shell is set to 'fish' but could change it to 'bash' or 'zsh' if you prefer.
+
+#+begin_src emacs-lisp
+(use-package vterm)
+(setq shell-file-name "/usr/local/bin/fish"
+      vterm-max-scrollback 5000)
+(use-package fish-mode)
+#+end_src
+
+
+* Programming
+
+** Company - code completion
+
+#+begin_src emacs-lisp
+(use-package company
+  :diminish
+  :bind (("C-." . #'company-complete))
+  :hook (prog-mode . company-mode)
+  :custom
+  (company-dabbrev-downcase nil "Don't downcase returned candidates.")
+  (company-show-numbers t "Numbers are helpful.")
+  (company-tooltip-limit 20 "The more the merrier.")
+  (company-tooltip-idle-delay 0.4 "Faster!")
+  (company-async-timeout 20 "Some requests can take a long time. That's fine.")
+  :config
+
+  ;; Use the numbers 0-9 to select company completion candidates
+  (let ((map company-active-map))
+    (mapc (lambda (x) (define-key map (format "%d" x)
+   `(lambda () (interactive) (company-complete-number ,x))))
+   (number-sequence 0 9))))
+#+end_src
+
+#+begin_src emacs-lisp
+;(use-package company-org-block
+;  :ensure t
+;  :custom
+;  (company-org-block-edit-style 'inline) ;; 'auto, 'prompt, or 'inline
+;  :hook ((org-mode . (lambda ()
+;                       (setq-local company-backends '(company-org-block))
+;                       (company-mode +1)))))
+#+end_src
+
+
+** Python
+
+#+begin_src emacs-lisp
+(use-package company-jedi)
+
+(defun my/python-mode-hook ()
+  (add-to-list 'company-backends 'company-jedi))
+
+(add-hook 'python-mode-hook 'my/python-mode-hook)
+#+end_src
+
+** Powershell
+
+#+begin_src emacs-lisp
+(use-package powershell)
+#+end_src
+
+** Javascript
+
+#+begin_src emacs-lisp
+;;(use-package ob-js)
+#+end_src
+
+#+RESULTS:
+
+* WHICH KEY
+Which-key is a minor mode for Emacs that displays the key bindings following your currently entered incomplete command (a prefix) in a popup.
+
+=NOTE:= Which-key has an annoying bug that in some fonts and font sizes, the bottom row in which key gets covered up by the modeline.
+
+#+begin_src emacs-lisp
+(use-package which-key
+  :init
+  (setq which-key-side-window-location 'bottom
+        which-key-sort-order #'which-key-key-order-alpha
+        which-key-sort-uppercase-first nil
+        which-key-add-column-padding 1
+        which-key-max-display-columns nil
+        which-key-min-display-lines 6
+        which-key-side-window-slot -10
+        which-key-side-window-max-height 0.25
+        which-key-idle-delay 0.8
+        which-key-max-description-length 25
+        which-key-allow-imprecise-window-fit t
+        which-key-separator " → " ))
+(which-key-mode)
+#+end_src
+
+
+
+
+
+* WRITEROOM MODE - DISABLED
+A minor mode for Emacs that implements a distraction-free writing mode similar to the famous Writeroom editor for OS X.
+
+#+begin_src emacs-lisp
+;;(use-package writeroom-mode)
+#+end_src

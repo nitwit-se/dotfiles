@@ -764,6 +764,16 @@ Disabled for now - generates Melp package error and not sure I want to use it an
 ;;	   ("C-c s C-l" . org-super-links-insert-link)))
 #+end_src
 
+** Org ox-rst
+
+#+begin_src emacs-lisp
+
+(use-package ox-rst)
+
+#+end_src
+
+#+RESULTS:
+
 ** Presentation modes - DISABLED
 *** Org-Reveal - export powerpoint like presentations using Reveal.js to HTML
 

@@ -1,0 +1,77 @@
+# Inserts a blank line between shell prompts
+add_newline = true
+
+scan_timeout = 10
+
+format = """
+$username\
+$hostname\
+$shlvl\
+$directory\
+$vcsh\
+$git_branch\
+$git_commit\
+$git_state\
+$git_status\
+$docker_context\
+$dotnet\
+$nodejs\
+$perl\
+$php\
+$python\
+$memory_usage\
+$openstack\
+$env_var\
+$cmd_duration\
+$line_break\
+$jobs\
+$battery\
+$time\
+$status\
+$shell\
+$character"""
+
+
+
+# Replace the "❯" symbol in the prompt with "➜"
+[character]                            # The name of the module we are configuring is "character"
+success_symbol = "[➜](bold green)"     # The "success_symbol" segment is being set to "➜" with the color "bold green"
+error_symbol = "[✗](bold red) "
+
+
+# Disable the package module, hiding it from the prompt completely
+[package]
+disabled = true
+
+[battery]
+full_symbol = "🔋 "
+charging_symbol = "⚡️ "
+discharging_symbol = "💀 "
+
+[[battery.display]]
+threshold = 10
+style = "bold red"
+
+[directory]
+truncation_length = 8
+truncation_symbol = "…/"
+truncate_to_repo = true
+
+
+[hostname]
+ssh_only = true
+format =  "on [$hostname](bold red) "
+disabled = false
+
+[shell]
+fish_indicator = ""
+powershell_indicator = "_"
+unknown_indicator = "mystery shell"
+disabled = false
+
+[shlvl]
+disabled = false
+format = ">>$shlvl<<|"
+threshold = 2
+
+

@@ -299,6 +299,15 @@ Don't use a 3rd party - Emacs has a great built-in line number mode.
 #+RESULTS:
 : relative
 
+Testing without line numbers for now.. but a little margin..
+
+#+begin_src emacs-lisp
+(global-display-line-numbers-mode 0)
+;;(setq-default display-line-numbers-width 4)
+(set-window-margins (selected-window) 1 1)
+
+
+#+end_src
 
 
 *** Change Modeline To Doom's Modeline
@@ -333,6 +342,23 @@ Haven't used this live yet - so might be waste of loading:
   :config
   (global-undo-tree-mode +1)
   (unbind-key "M-_" undo-tree-map))
+#+end_src
+
+
+
+** Spell checking
+
+#+begin_src emacs-lisp
+(use-package guess-language         ; Automatically detect language for Flyspell
+  :ensure t
+  :defer t
+  :init (add-hook 'org-mode-hook #'guess-language-mode)
+  :config
+  (setq guess-language-langcodes '((en . ("en_GB" "English"))
+                                   (sv . ("sv" "Swedish")))
+        guess-language-languages '(en sv)
+        guess-language-min-paragraph-length 45)
+  :diminish guess-language-mode)
 #+end_src
 
 
@@ -554,6 +580,8 @@ Org Mode is =THE= killer feature within Emacs.  But it does need some tweaking.
 
 #+begin_src emacs-lisp
 (add-hook 'org-mode-hook 'org-indent-mode)
+(add-hook 'org-mode-hook 'turn-on-flyspell)
+
 (setq org-directory "~/Dropbox/org/"
       org-agenda-files '("~/Dropbox/org-roam/")
       org-default-notes-file (expand-file-name "notes.org" org-directory)
@@ -712,18 +740,23 @@ Install and configure org-roam:
 #+begin_src emacs-lisp
 (use-package org-roam
       :ensure t
-      :hook
-      (after-init . org-roam-mode)
       :custom
       (org-roam-directory (file-truename "~/Dropbox/org-roam"))
-      :bind (:map org-roam-mode-map
-              (("C-c n l" . org-roam)
-               ("C-c n f" . org-roam-find-file)
-               ("C-c n g" . org-roam-graph))
-              :map org-mode-map
-              (("C-c n i" . org-roam-insert))
-              (("C-c n I" . org-roam-insert-immediate))))
+      :bind (
+               ("C-c n l" . org-roam)
+               ("C-c n c" . org-roam-capture)
+               ("C-c n f" . org-roam-node-find)
+               ("C-c n b" . org-roam-buffer-toggle)
+               ("C-c n g" . org-roam-graph)
+               ("C-c n i" . org-roam-node-insert)
+               ("C-c n I" . org-roam-insert-immediate))
+      :config
+      (org-roam-setup)
+)
 #+end_src
+
+#+RESULTS:
+: org-roam-insert-immediate
 
 
 To build the cache manually, one can run ~M-x org-roam-db-build-cache~. Cache builds may take a while the first time, but is often instantaneous in subsequent runs because it only reprocesses modified files.
@@ -743,7 +776,6 @@ To build the cache manually, one can run ~M-x org-roam-db-build-cache~. Cache bu
 (bind-key "C-c n t" 'org-roam-dailies-find-today)
 (bind-key "C-c n d" 'org-roam-dailies-find-date)
 (bind-key "C-c n y" 'org-roam-dailies-find-yesterday)
-(bind-key "C-c n b" 'org-roam-switch-to-buffer)
 (bind-key "C-c n x" 'org-roam-buffer-toggle-display)
 
 #+end_src

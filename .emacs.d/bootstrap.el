@@ -28,7 +28,7 @@
 (if (fboundp 'scroll-bar-mode)
     (scroll-bar-mode -1))
 
-(add-to-list 'initial-frame-alist '(fullscreen . maximized))
+(add-to-list 'initial-frame-alist '(fullscreen . fullheight))
 
 ;;; Fix this bug:
 ;;; https://www.reddit.com/r/emacs/comments/cueoug/the_failed_to_download_gnu_archive_is_a_pretty/
@@ -76,7 +76,7 @@
 ;;; Lockfiles unfortunately cause more pain than benefit
 (setq create-lockfiles nil)
 
-
+(setq org-roam-v2-ack t)
 
 (org-babel-load-file
  (expand-file-name

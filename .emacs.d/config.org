@@ -245,6 +245,12 @@ Defining our fonts.
 
 *** Setting The Font Face
 
+was
+150
+180
+150
+
+
 #+begin_src emacs-lisp
 (set-face-attribute 'default nil
   :font "Hack"
@@ -358,7 +364,8 @@ Haven't used this live yet - so might be waste of loading:
                                    (sv . ("sv" "Swedish")))
         guess-language-languages '(en sv)
         guess-language-min-paragraph-length 45)
-  :diminish guess-language-mode)
+  :diminish guess-languag
+  e-mode)
 #+end_src
 
 
@@ -748,6 +755,7 @@ Install and configure org-roam:
                ("C-c n f" . org-roam-node-find)
                ("C-c n b" . org-roam-buffer-toggle)
                ("C-c n g" . org-roam-graph)
+               ("C-c n h" . org-id-get-create)
                ("C-c n i" . org-roam-node-insert)
                ("C-c n I" . org-roam-insert-immediate))
       :config

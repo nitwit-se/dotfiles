@@ -429,10 +429,13 @@ Ivy, counsel and swiper are a generic completion mechanism for Emacs.  Ivy-rich 
       '((swiper . ivy--regex-plus)
         (swiper-isearch . regexp-quote)
         ;; (counsel-git . ivy--regex-plus)
-        ;; (counsel-ag . ivy--regex-plus)
+        (counsel-ag . ivy--regex-plus)
         (counsel-rg . ivy--regex-plus)
         (t      . ivy--regex-fuzzy)))   ;; enable fuzzy searching everywhere except for Swiper and ag
 #+end_src
+
+#+RESULTS:
+: ((swiper . ivy--regex-plus) (swiper-isearch . regexp-quote) (counsel-ag . ivy--regex-plus) (counsel-rg . ivy--regex-plus) (t . ivy--regex-fuzzy))
 
 #+begin_src emacs-lisp
 (use-package smex)
@@ -605,10 +608,13 @@ Org Mode is =THE= killer feature within Emacs.  But it does need some tweaking.
       org-src-tab-acts-natively t
       org-edit-src-content-indentation 0)
 
+;; links open in same frame
+(setq org-link-frame-setup '((file . find-file)))
+
 #+end_src
 
 #+RESULTS:
-: 0
+: ((file . find-file))
 
 
 
@@ -749,6 +755,7 @@ Install and configure org-roam:
       :ensure t
       :custom
       (org-roam-directory (file-truename "~/Dropbox/org-roam"))
+      (org-roam-db-update-on-save t)
       :bind (
                ("C-c n l" . org-roam)
                ("C-c n c" . org-roam-capture)
@@ -759,6 +766,7 @@ Install and configure org-roam:
                ("C-c n i" . org-roam-node-insert)
                ("C-c n I" . org-roam-insert-immediate))
       :config
+      (org-roam-db-autosync-mode)
       (org-roam-setup)
 )
 #+end_src
@@ -768,6 +776,89 @@ Install and configure org-roam:
 
 
 To build the cache manually, one can run ~M-x org-roam-db-build-cache~. Cache builds may take a while the first time, but is often instantaneous in subsequent runs because it only reprocesses modified files.
+
+**** Org-roam backlink buffer
+
+#+begin_src emacs-lisp
+
+;; for org-roam-buffer-toggle
+;; Recommendation in the official manual
+(add-to-list 'display-buffer-alist
+               '("\\*org-roam\\*"
+                  (display-buffer-in-direction)
+                  (direction . right)
+                  (window-width . 0.33)
+                  (window-height . fit-window-to-buffer)))
+
+;; For mouse users, to add back mouse click to visit the node in the backlink buffer:
+(define-key org-roam-mode-map [mouse-1] #'org-roam-visit-thing)
+#+end_src
+
+#+RESULTS:
+: org-roam-visit-thing
+
+
+**** Show back-links in open
+
+#+begin_src emacs-lisp
+
+(cl-defmethod org-roam-node-directories ((node org-roam-node))
+  (if-let ((dirs (file-name-directory (file-relative-name (org-roam-node-file node) org-roam-directory))))
+      (format "(%s)" (car (f-split dirs)))
+    ""))
+
+(cl-defmethod org-roam-node-backlinkscount ((node org-roam-node))
+  (let* ((count (caar (org-roam-db-query
+                       [:select (funcall count source)
+                                :from links
+                                :where (= dest $s1)
+                                :and (= type "id")]
+                       (org-roam-node-id node)))))
+    (format "[%d]" count)))
+
+(setq org-roam-node-display-template "${tags:10} ${title:100} ${backlinkscount:6}")
+
+#+end_src
+
+#+RESULTS:
+: ${tags:10} ${title:100} ${backlinkscount:6}
+
+
+**** Hide properties draw in org-roam
+
+#+begin_src emacs-lisp
+
+(defun org-hide-properties ()
+  "Hide all org-mode headline property drawers in buffer. Could be slow if it has a lot of overlays."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward
+            "^ *:properties:\n\\( *:.+?:.*\n\\)+ *:end:\n" nil t)
+      (let ((ov_this (make-overlay (match-beginning 0) (match-end 0))))
+        (overlay-put ov_this 'display "")
+        (overlay-put ov_this 'hidden-prop-drawer t))))
+  (put 'org-toggle-properties-hide-state 'state 'hidden))
+
+(defun org-show-properties ()
+  "Show all org-mode property drawers hidden by org-hide-properties."
+  (interactive)
+  (remove-overlays (point-min) (point-max) 'hidden-prop-drawer t)
+  (put 'org-toggle-properties-hide-state 'state 'shown))
+
+(defun org-toggle-properties ()
+  "Toggle visibility of property drawers."
+  (interactive)
+  (if (eq (get 'org-toggle-properties-hide-state 'state) 'hidden)
+      (org-show-properties)
+    (org-hide-properties)))
+
+#+end_src
+
+#+RESULTS:
+: org-toggle-properties
+
+
 
 *** Org-roam Daily Notes
 
@@ -790,6 +881,25 @@ To build the cache manually, one can run ~M-x org-roam-db-build-cache~. Cache bu
 
 #+RESULTS:
 : org-roam-buffer-toggle-display
+
+
+** Org-roam searching
+
+#+begin_src emacs-lisp
+
+
+(defun jmb/counsel-ag-roam ()
+ "Do counsel-ag on the org roam directory"
+ (interactive)
+ (counsel-ag nil org-roam-directory))
+
+(global-set-key (kbd "C-c s") 'jmb/counsel-ag-roam)
+
+#+end_src
+
+#+RESULTS:
+: jmb/counsel-ag-roam
+
 
 ** Org Super Links - DISABLED
 

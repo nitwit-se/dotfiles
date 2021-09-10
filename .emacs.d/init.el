@@ -7,7 +7,7 @@
  ;; If there is more than one, they won't work right.
  '(company-show-quick-access t nil nil "Numbers are helpful.")
  '(package-selected-packages
-   '(guess-language ox-rst org-download ob-js javascript company-org-block org-super-links nord-theme powershell epresent writeroom-mode which-key vterm use-package undo-tree toc-org sudo-edit solarized-theme smex shackle rainbow-delimiters python-mode projectile perspective org-bullets neotree markdown-mode magit ivy-rich ivy-posframe general exec-path-from-shell emojify doom-themes doom-modeline dashboard-project-status counsel avy async)))
+   '(consult guess-language ox-rst org-download ob-js javascript company-org-block org-super-links nord-theme powershell epresent writeroom-mode which-key vterm use-package undo-tree toc-org sudo-edit solarized-theme smex shackle rainbow-delimiters python-mode projectile perspective org-bullets neotree markdown-mode magit ivy-rich ivy-posframe general exec-path-from-shell emojify doom-themes doom-modeline dashboard-project-status counsel avy async)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

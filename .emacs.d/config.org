@@ -1,4 +1,3 @@
-
 #+TITLE: DT's GNU Emacs Config
 #+AUTHOR: Derek Taylor (DT)
 #+DESCRIPTION: DT's personal Emacs config.
@@ -493,7 +492,7 @@ the fallback position will be centered in the window.
   (setq ivy-posframe-display-functions-alist
     '((swiper                     . ivy-posframe-display-at-frame-top-center)
       (complete-symbol            . ivy-posframe-display-at-point)
-      (counsel-M-x                . ivy-posframe-display-at-frame-bottom-window-center)
+      (counsel-M-x                . ivy-posframe-display-at-frame-top-center)
       (counsel-esh-history        . ivy-posframe-display-at-window-center)
       (counsel-describe-function  . ivy-display-function-fallback)
       (counsel-describe-variable  . ivy-display-function-fallback)
@@ -515,6 +514,8 @@ the fallback position will be centered in the window.
 
 (set-face-attribute 'ivy-posframe nil :foreground "gainsboro" :background "#14171c")
 #+end_src
+
+#+RESULTS:
 
 
 
@@ -893,7 +894,7 @@ To build the cache manually, one can run ~M-x org-roam-db-build-cache~. Cache bu
  (interactive)
  (counsel-ag nil org-roam-directory))
 
-(global-set-key (kbd "C-c s") 'jmb/counsel-ag-roam)
+(global-set-key (kbd "C-c n s") 'jmb/counsel-ag-roam)
 
 #+end_src
 

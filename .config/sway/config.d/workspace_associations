@@ -1,0 +1,13 @@
+
+# Bind App to workspace
+# Check class by : xprop
+# swaymsg -t get_tree
+assign [class="Emacs"] 2
+
+assign [app_id="firefox"] workspace 3
+
+assign [class="Code"] 5
+
+assign [class="Zoom"] 7
+assign [class="Slack"] 8
+assign [class="Mailspring"] 9

@@ -1,0 +1,5 @@
+[Desktop Entry]
+Exec=/usr/bin/alacritty
+Name=alacritty
+Comment=A fast, cross-platform, OpenGL terminal emulator
+Type=Application

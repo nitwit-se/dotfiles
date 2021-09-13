@@ -192,7 +192,7 @@ to undo / redo!
 (use-package shackle
   :init
   (setq shackle-default-alignment 'below
-        shackle-default-size 0.4
+        shackle-default-size 0.6
         shackle-rules '((help-mode           :align below :select t)
                         (helpful-mode        :align below)
                         (compilation-mode    :select t   :size 0.25)
@@ -212,6 +212,9 @@ to undo / redo!
   :config
   (shackle-mode 1))
 #+end_src
+
+#+RESULTS:
+: t
 
 *** TODO investigate Purpose as alternative to Shackle
 https://github.com/bmag/emacs-purpose
@@ -400,6 +403,7 @@ Ivy, counsel and swiper are a generic completion mechanism for Emacs.  Ivy-rich 
   (setq ivy-count-format "(%d/%d) ")
   (setq ivy-use-virtual-buffers t)
   (setq enable-recursive-minibuffers t)
+  (setq ivy-use-selectable-prompt t)
   :config
   (ivy-mode))
 
@@ -490,9 +494,9 @@ the fallback position will be centered in the window.
 (use-package ivy-posframe
   :init
   (setq ivy-posframe-display-functions-alist
-    '((swiper                     . ivy-posframe-display-at-frame-top-center)
+    '((swiper                     . ivy-posframe-display-at-window-bottom-left)
       (complete-symbol            . ivy-posframe-display-at-point)
-      (counsel-M-x                . ivy-posframe-display-at-frame-top-center)
+      (counsel-M-x                . ivy-posframe-display-at-window-bottom-left)
       (counsel-esh-history        . ivy-posframe-display-at-window-center)
       (counsel-describe-function  . ivy-display-function-fallback)
       (counsel-describe-variable  . ivy-display-function-fallback)
@@ -636,6 +640,45 @@ Org Mode is =THE= killer feature within Emacs.  But it does need some tweaking.
 
 #+RESULTS:
 
+** Org agenda customisations
+Full window
+#+begin_src emacs-lisp
+(setq org-agenda-window-setup 'current-window)
+#+end_src
+
+#+RESULTS:
+: current-window
+
+
+Make a nice view:
+,#+begin_src emacs-lisp
+(defun air-org-skip-subtree-if-priority (priority)
+  "Skip an agenda subtree if it has a priority of PRIORITY.
+
+PRIORITY may be one of the characters ?A, ?B, or ?C."
+  (let ((subtree-end (save-excursion (org-end-of-subtree t)))
+        (pri-value (* 1000 (- org-lowest-priority priority)))
+        (pri-current (org-get-priority (thing-at-point 'line t))))
+    (if (= pri-value pri-current)
+        subtree-end
+      nil)))
+
+(setq org-agenda-custom-commands
+      '(("d" "Daily agenda and all TODOs"
+         ((tags "PRIORITY=\"A\""
+                ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                 (org-agenda-overriding-header "High-priority unfinished tasks:")))
+          (agenda "")
+          (alltodo ""
+                   ((org-agenda-skip-function
+                     '(or (air-org-skip-subtree-if-priority ?A)
+                          (org-agenda-skip-if nil '(scheduled deadline))))))))))
+
+#+end_src
+
+#+RESULTS:
+| d | Daily agenda and all TODOs | ((tags PRIORITY="A" ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done)) (org-agenda-overriding-header High-priority unfinished tasks:))) (agenda ) (alltodo  ((org-agenda-skip-function '(or (air-org-skip-subtree-if-priority 65) (org-agenda-skip-if nil '(scheduled deadline))))))) |
+
 ** Easier code bock for literate config
 
   While writing this configuration file in Org mode, I have to write code blocks all the time. Org has templates, so doing =<s TAB= creates a source code block. Here I create a custom template for emacs-lisp specifically. So, =<el TAB= creates the Emacs lisp code block and puts the cursor inside.
@@ -749,7 +792,7 @@ Toc-org helps you to have an up-to-date table of contents in org files without e
 
 ** Org Roam mode - replace Roam Research?!
 
-Install and configure org-roam:
+*** Install and configure org-roam:
 
 #+begin_src emacs-lisp
 (use-package org-roam
@@ -792,7 +835,7 @@ To build the cache manually, one can run ~M-x org-roam-db-build-cache~. Cache bu
                   (window-height . fit-window-to-buffer)))
 
 ;; For mouse users, to add back mouse click to visit the node in the backlink buffer:
-(define-key org-roam-mode-map [mouse-1] #'org-roam-visit-thing)
+ (define-key org-roam-mode-map [mouse-1] #'org-roam-visit-thing)
 #+end_src
 
 #+RESULTS:
@@ -800,6 +843,10 @@ To build the cache manually, one can run ~M-x org-roam-db-build-cache~. Cache bu
 
 
 **** Show back-links in open
+
+This code doesn't work on arch-linux for some reason, shame!
+See: https://www.gitmemory.com/issue/org-roam/org-roam/1669/886137520
+Even though code below comes after loading org-roam, org-roam seems to be lazy loaded and org-roam-node doesn't exist until org-roam is first triggered..
 
 #+begin_src emacs-lisp
 
@@ -818,6 +865,7 @@ To build the cache manually, one can run ~M-x org-roam-db-build-cache~. Cache bu
     (format "[%d]" count)))
 
 (setq org-roam-node-display-template "${tags:10} ${title:100} ${backlinkscount:6}")
+
 
 #+end_src
 
@@ -858,6 +906,22 @@ To build the cache manually, one can run ~M-x org-roam-db-build-cache~. Cache bu
 
 #+RESULTS:
 : org-toggle-properties
+
+
+
+*** Org capture templates
+
+#+begin_src emacs-lisp
+(setq org-capture-templates
+      '(("t" "Todo" entry (file+headline "~/Dropbox/org-roam/agenda.org" "Inbox")
+         "* TODO %?\n  %i\n  %a")
+        ("j" "Journal" entry (file+datetree "~/Dropbox/org-roam/journal.org")
+         "* %?\nEntered on %U\n  %i\n  %a")))
+
+(bind-key "C-c c" 'org-capture)
+(bind-key "C-c a" 'org-agenda)
+
+#+end_src
 
 
 

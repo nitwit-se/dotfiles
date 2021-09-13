@@ -651,7 +651,7 @@ Full window
 
 
 Make a nice view:
-,#+begin_src emacs-lisp
+#+begin_src emacs-lisp
 (defun air-org-skip-subtree-if-priority (priority)
   "Skip an agenda subtree if it has a priority of PRIORITY.
 
@@ -800,6 +800,8 @@ Toc-org helps you to have an up-to-date table of contents in org files without e
       :custom
       (org-roam-directory (file-truename "~/Dropbox/org-roam"))
       (org-roam-db-update-on-save t)
+      (define-key org-roam-mode-map [mouse-1] #'org-roam-visit-thing)
+
       :bind (
                ("C-c n l" . org-roam)
                ("C-c n c" . org-roam-capture)
@@ -834,8 +836,6 @@ To build the cache manually, one can run ~M-x org-roam-db-build-cache~. Cache bu
                   (window-width . 0.33)
                   (window-height . fit-window-to-buffer)))
 
-;; For mouse users, to add back mouse click to visit the node in the backlink buffer:
- (define-key org-roam-mode-map [mouse-1] #'org-roam-visit-thing)
 #+end_src
 
 #+RESULTS:
@@ -844,27 +844,27 @@ To build the cache manually, one can run ~M-x org-roam-db-build-cache~. Cache bu
 
 **** Show back-links in open
 
-This code doesn't work on arch-linux for some reason, shame!
+This code doesn't work - neither arch nor mac os.
 See: https://www.gitmemory.com/issue/org-roam/org-roam/1669/886137520
 Even though code below comes after loading org-roam, org-roam seems to be lazy loaded and org-roam-node doesn't exist until org-roam is first triggered..
 
 #+begin_src emacs-lisp
 
-(cl-defmethod org-roam-node-directories ((node org-roam-node))
-  (if-let ((dirs (file-name-directory (file-relative-name (org-roam-node-file node) org-roam-directory))))
-      (format "(%s)" (car (f-split dirs)))
-    ""))
+;;(cl-defmethod org-roam-node-directories ((node org-roam-node))
+;;  (if-let ((dirs (file-name-directory (file-relative-name (org-roam-node-file node) org-roam-directory))))
+;;      (format "(%s)" (car (f-split dirs)))
+;;    ""))
 
-(cl-defmethod org-roam-node-backlinkscount ((node org-roam-node))
-  (let* ((count (caar (org-roam-db-query
-                       [:select (funcall count source)
-                                :from links
-                                :where (= dest $s1)
-                                :and (= type "id")]
-                       (org-roam-node-id node)))))
-    (format "[%d]" count)))
+;;(cl-defmethod org-roam-node-backlinkscount ((node org-roam-node))
+;;  (let* ((count (caar (org-roam-db-query
+;;                       [:select (funcall count source)
+;;                                :from links
+;;                                :where (= dest $s1)
+;;                                :and (= type "id")]
+;;                       (org-roam-node-id node)))))
+;;    (format "[%d]" count)))
 
-(setq org-roam-node-display-template "${tags:10} ${title:100} ${backlinkscount:6}")
+;;(setq org-roam-node-display-template "${tags:10} ${title:100} ${backlinkscount:6}")
 
 
 #+end_src

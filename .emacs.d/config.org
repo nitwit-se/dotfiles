@@ -693,16 +693,72 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
   #+END_SRC
 
 
-** Enabling Org Bullets and fonts
+** Enabling Org Bullets and fonts with org-superstar
 Org-bullets gives us attractive bullets rather than asterisks.
 
 #+begin_src emacs-lisp
-(use-package org-bullets)
-(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+
+
+(use-package org-superstar)
+
+
+;;; Titles and Sections
+;; hide #+TITLE:
+(setq org-hidden-keywords '(title))
+
+;; set basic title font
+(set-face-attribute 'org-level-8 nil :weight 'bold :inherit 'default)
+(set-face-attribute 'org-level-7 nil :inherit 'org-level-8 :height 1.02)
+(set-face-attribute 'org-level-6 nil :inherit 'org-level-8 :height 1.04)
+(set-face-attribute 'org-level-5 nil :inherit 'org-level-8 :height 1.06)
+(set-face-attribute 'org-level-4 nil :inherit 'org-level-8 :height 1.08)
+(set-face-attribute 'org-level-3 nil :inherit 'org-level-8 :height 1.1) (set-face-attribute 'org-level-2 nil :inherit 'org-level-8 :height 1.15)
+(set-face-attribute 'org-level-1 nil :inherit 'org-level-8 :height 1.2)
+
+;; Only use the first 4 styles and do not cycle.
+(setq org-cycle-level-faces nil)
+(setq org-n-level-faces 4)
+
+;; Document Title
+(set-face-attribute 'org-document-title nil
+                    :height 1.4
+                    :foreground 'unspecified
+                    :inherit 'org-level-8)
+
+
+;; This is usually the default, but keep in mind it must be nil
+(setq org-hide-leading-stars nil)
+;; This line is necessary.
+(setq org-superstar-leading-bullet ?\s)
+;; If you use Org Indent you also need to add this, otherwise the
+;; above has no effect while Indent is enabled.
+(setq org-indent-mode-turns-on-hiding-stars nil)
+
+(add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
+
+;;(setq org-superstar-headline-bullets-list
+;;      '("❶" ("🞛" ?◈) "○" "▷"))
+(setq org-superstar-headline-bullets-list
+      '( "🌕" "🌖" "🌗" "🌘" "🌑" "🌒" "🌓" "🌔" ))
+;; ❷ 	❸ 	❹ 	❺ 	❻
+
+(setq org-superstar-special-todo-items t)
+
+;;org-superstar-todo-bullet-alist.
+
+  (setq org-superstar-todo-bullet-alist
+        '(("TODO" . ?*)
+          ("PROJ" . ?✒)
+          ("STALLED" . ?✰)
+          ("TESTING" . ?☕)
+          ("CANCELLED" . ?✘)
+          ("DONE" . ?✔)))
+
+
 #+end_src
 
-
 #+RESULTS:
+: ((TODO . 42) (NEXT . 10002) (HOLD . 10032) (WAITING . 9749) (CANCELLED . 10008) (DONE . 10004))
 
 
 ** Org Link Abbreviations

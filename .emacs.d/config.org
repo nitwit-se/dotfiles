@@ -704,7 +704,7 @@ Org-bullets gives us attractive bullets rather than asterisks.
 
 ;;; Titles and Sections
 ;; hide #+TITLE:
-(setq org-hidden-keywords '(title))
+;;(setq org-hidden-keywords '(title))
 
 ;; set basic title font
 (set-face-attribute 'org-level-8 nil :weight 'bold :inherit 'default)
@@ -712,7 +712,8 @@ Org-bullets gives us attractive bullets rather than asterisks.
 (set-face-attribute 'org-level-6 nil :inherit 'org-level-8 :height 1.04)
 (set-face-attribute 'org-level-5 nil :inherit 'org-level-8 :height 1.06)
 (set-face-attribute 'org-level-4 nil :inherit 'org-level-8 :height 1.08)
-(set-face-attribute 'org-level-3 nil :inherit 'org-level-8 :height 1.1) (set-face-attribute 'org-level-2 nil :inherit 'org-level-8 :height 1.15)
+(set-face-attribute 'org-level-3 nil :inherit 'org-level-8 :height 1.1)
+(set-face-attribute 'org-level-2 nil :inherit 'org-level-8 :height 1.15)
 (set-face-attribute 'org-level-1 nil :inherit 'org-level-8 :height 1.2)
 
 ;; Only use the first 4 styles and do not cycle.
@@ -740,6 +741,8 @@ Org-bullets gives us attractive bullets rather than asterisks.
 ;;      '("❶" ("🞛" ?◈) "○" "▷"))
 (setq org-superstar-headline-bullets-list
       '( "🌕" "🌖" "🌗" "🌘" "🌑" "🌒" "🌓" "🌔" ))
+(setq org-superstar-headline-bullets-list
+      '( "⁕" ))
 ;; ❷ 	❸ 	❹ 	❺ 	❻
 
 (setq org-superstar-special-todo-items t)
@@ -758,7 +761,7 @@ Org-bullets gives us attractive bullets rather than asterisks.
 #+end_src
 
 #+RESULTS:
-: ((TODO . 42) (NEXT . 10002) (HOLD . 10032) (WAITING . 9749) (CANCELLED . 10008) (DONE . 10004))
+: ((TODO . 42) (PROJ . 10002) (STALLED . 10032) (TESTING . 9749) (CANCELLED . 10008) (DONE . 10004))
 
 
 ** Org Link Abbreviations

@@ -57,7 +57,7 @@
 @define-color date #2e3440;
 @define-color time #eceff4;*/
 
-/* Gruvbox */
+/* Nord */
 @define-color light #eceff4;
 @define-color mediumlight #d8dee9;
 @define-color mediumdark #4c566a;
@@ -77,6 +77,29 @@
 @define-color tray #2e3440;
 @define-color date #3b4252;
 @define-color time #434c5e;
+
+
+/* Chinolor - https://github.com/iwyvi/chinolor */
+@define-color light #f8f4ed;
+@define-color mediumlight #E4DFD7;
+@define-color mediumdark #4c566a;
+@define-color dark #1a241e;
+@define-color warning #fc7930;
+@define-color critical #ee3f4d;
+@define-color mode #2B312C;
+@define-color workspaces #2B312C;
+@define-color workspacesfocused #474B4C;
+@define-color spare1 #d3869b;
+@define-color spare2 #b16286;
+@define-color sound #A4ACA7;
+@define-color network #8A988E;
+@define-color pacman #617172;
+@define-color idle #474B4C;
+@define-color battery #2B312C;
+@define-color tray #1a241e;
+@define-color date #2B312C;
+@define-color time #474B4C;
+
 
 /* Reset all styles */
 * {
@@ -236,14 +259,14 @@
 
 #idle_inhibitor {
 	background: @idle;
-	color: @dark;
+	color: @mediumlight;
 }
 
 
 
 #battery {
 	background: @battery;
-	color: @dark;
+	color: @mediumlight;
 }
 
 #tray {

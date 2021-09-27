@@ -7,7 +7,7 @@
     // Choose the order of the modules idle_inhibitor
     //
     "modules-left": ["custom/launcher", "sway/mode", "sway/workspaces", "custom/arrow10"],
-    "modules-center": [ "sway/window" ],
+    "modules-center": [ "custom/arrowleft", "sway/window", "custom/arrowright" ],
     "modules-right": [
 
         "custom/arrow1",
@@ -224,6 +224,15 @@
 	},
 
 	"custom/arrow10": {
+		"format": "",
+		"tooltip": false
+	},
+        "custom/arrowleft": {
+		"format": "",
+		"tooltip": false
+	},
+
+	"custom/arrowright": {
 		"format": "",
 		"tooltip": false
 	}

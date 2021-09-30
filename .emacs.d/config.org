@@ -56,8 +56,8 @@ This is stuff that could almost be in bootstrap.el...
 (global-auto-revert-mode t)               ; Auto-update buffer if file has changed on disk
 (use-package undo-tree                    ; Enable undo-tree, sane undo/redo behavior
   :init (global-undo-tree-mode))
-(add-hook 'before-save-hook
-	  'delete-trailing-whitespace)    ; Delete trailing whitespace on save
+;;(add-hook 'before-save-hook
+;;	  'delete-trailing-whitespace)    ; Delete trailing whitespace on save
 ;;(add-hook 'prog-mode-hook                 ; Show line numbers in programming modes
 ;;          (if (and (fboundp 'display-line-numbers-mode) (display-graphic-p))
 ;;              #'display-line-numbers-mode
@@ -96,13 +96,15 @@ This is stuff that could almost be in bootstrap.el...
 ** Theme
 A theme maketh the editor - Doom Emacs has a great set of themes, but having that many themes in a package might possibly slow things down a tad?
 
+
+*** Nord Theme
 Going for [[https://github.com/arcticicestudio/nord-emacs][Nord theme]] directly for now (have also tried gruvvbox, solarized, etc).
 
 #+begin_src emacs-lisp
 ;;(use-package doom-themes)
 ;;(setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
 ;;      doom-themes-enable-italic t) ; if nil, italics is universally disabled
-;;(load-theme 'doom-nord t)
+;;(load-theme 'doom-one t)
 
 (use-package nord-theme)
 (load-theme 'nord t)
@@ -111,6 +113,22 @@ Going for [[https://github.com/arcticicestudio/nord-emacs][Nord theme]] directly
 (setq nord-region-highlight "snowstorm")
 #+end_src
 
+#+RESULTS:
+: snowstorm
+
+
+*** Chinolor Theme
+This matches waybar theme better - but has some glitches I can't be bothered resolving (e.g. TODO items in org-mode have boxes around them).
+
+#+begin_src emacs-lisp
+;;(load "~/.emacs.d/chinolor-theme.el" nil t)
+;;(load-theme 'chinolor t)
+
+;;(use-package org-beautify-theme)
+;;(load-theme 'org-beautify-theme t)
+#+end_src
+
+#+RESULTS:
 
 
 ** Icons
@@ -255,15 +273,15 @@ was
 
 #+begin_src emacs-lisp
 (set-face-attribute 'default nil
-  :font "Hack"
+  :font "Hack Nerd Font"
   :height 150
   :weight 'medium)
 (set-face-attribute 'variable-pitch nil
-  :font "SF Pro"
-  :height 180
+  :font "SF Pro Text"
+  :height 150
   :weight 'medium)
 (set-face-attribute 'fixed-pitch nil
-  :font "Hack"
+  :font "Hack Nerd Font"
   :height 150
   :weight 'medium)
 
@@ -600,7 +618,7 @@ Org Mode is =THE= killer feature within Emacs.  But it does need some tweaking.
 (setq org-directory "~/Dropbox/org/"
       org-agenda-files '("~/Dropbox/org-roam/")
       org-default-notes-file (expand-file-name "notes.org" org-directory)
-      org-ellipsis " ≫ "
+      org-ellipsis " [+] "
       org-startup-indented t
       org-log-done 'time
       org-return-follows-link  t
@@ -707,23 +725,23 @@ Org-bullets gives us attractive bullets rather than asterisks.
 ;;(setq org-hidden-keywords '(title))
 
 ;; set basic title font
-(set-face-attribute 'org-level-8 nil :weight 'bold :inherit 'default)
-(set-face-attribute 'org-level-7 nil :inherit 'org-level-8 :height 1.02)
-(set-face-attribute 'org-level-6 nil :inherit 'org-level-8 :height 1.04)
-(set-face-attribute 'org-level-5 nil :inherit 'org-level-8 :height 1.06)
-(set-face-attribute 'org-level-4 nil :inherit 'org-level-8 :height 1.08)
-(set-face-attribute 'org-level-3 nil :inherit 'org-level-8 :height 1.1)
-(set-face-attribute 'org-level-2 nil :inherit 'org-level-8 :height 1.15)
-(set-face-attribute 'org-level-1 nil :inherit 'org-level-8 :height 1.2)
+(set-face-attribute 'org-level-8 nil :weight 'normal :inherit 'variable-pitch :foreground "#5E81AC")
+(set-face-attribute 'org-level-7 nil :inherit 'org-level-8 :weight 'normal :height 1.02 :foreground "#6B8BB3")
+(set-face-attribute 'org-level-6 nil :inherit 'org-level-8 :weight 'normal :height 1.03 :foreground "#7896BA")
+(set-face-attribute 'org-level-5 nil :inherit 'org-level-8 :weight 'normal :height 1.04 :foreground "#86A1C1")
+(set-face-attribute 'org-level-4 nil :inherit 'org-level-8 :weight 'normal :height 1.05 :foreground "#93ABC8")
+(set-face-attribute 'org-level-3 nil :inherit 'org-level-8 :weight 'normal :height 1.1 :foreground "#A1B5CE")
+(set-face-attribute 'org-level-2 nil :inherit 'org-level-8 :weight 'normal :height 1.15 :foreground "#AEC0D5")
+(set-face-attribute 'org-level-1 nil :inherit 'org-level-8 :weight 'normal :height 1.2 :foreground "#BCCADC")
 
 ;; Only use the first 4 styles and do not cycle.
 (setq org-cycle-level-faces nil)
-(setq org-n-level-faces 4)
+(setq org-n-level-faces 8)
 
 ;; Document Title
 (set-face-attribute 'org-document-title nil
                     :height 1.4
-                    :foreground 'unspecified
+                    :foreground "#AFC0D5"
                     :inherit 'org-level-8)
 
 
@@ -739,29 +757,30 @@ Org-bullets gives us attractive bullets rather than asterisks.
 
 ;;(setq org-superstar-headline-bullets-list
 ;;      '("❶" ("🞛" ?◈) "○" "▷"))
+;;(setq org-superstar-headline-bullets-list
+;;      '( "🌕" "🌖" "🌗" "🌘" "🌑" "🌒" "🌓" "🌔" ))
 (setq org-superstar-headline-bullets-list
-      '( "🌕" "🌖" "🌗" "🌘" "🌑" "🌒" "🌓" "🌔" ))
-(setq org-superstar-headline-bullets-list
-      '( "⁕" ))
+      '( " " ))
 ;; ❷ 	❸ 	❹ 	❺ 	❻
 
 (setq org-superstar-special-todo-items t)
 
 ;;org-superstar-todo-bullet-alist.
 
-  (setq org-superstar-todo-bullet-alist
-        '(("TODO" . ?*)
-          ("PROJ" . ?✒)
-          ("STALLED" . ?✰)
-          ("TESTING" . ?☕)
-          ("CANCELLED" . ?✘)
-          ("DONE" . ?✔)))
+(setq org-superstar-todo-bullet-alist
+        '(("TODO" . ? )
+          ("PROJ" . ? )
+          ("DOING" . ? )
+          ("STALLED" . ? )
+          ("TESTING" . ? )
+          ("CANCELLED" . ? )
+          ("DONE" . ? )))
 
 
 #+end_src
 
 #+RESULTS:
-: ((TODO . 42) (PROJ . 10002) (STALLED . 10032) (TESTING . 9749) (CANCELLED . 10008) (DONE . 10004))
+: ((TODO . 63024) (PROJ . 61717) (DOING . 61641) (STALLED . 63198) (TESTING . 59217) (CANCELLED . 63063) (DONE . 63028))
 
 
 ** Org Link Abbreviations
@@ -854,9 +873,18 @@ Toc-org helps you to have an up-to-date table of contents in org files without e
 *** Install and configure org-roam:
 
 #+begin_src emacs-lisp
+(use-package org)
+#+end_src
+
+#+RESULTS:
+
+#+begin_src emacs-lisp
 (use-package org-roam
       :ensure t
-      :custom
+      :after org
+      :init
+      (setq org-roam-v2-ack t) ;; acknowledge upgrade and remove warning at startup
+       :custom
       (org-roam-directory (file-truename "~/Dropbox/org-roam"))
       (org-roam-db-update-on-save t)
       (define-key org-roam-mode-map [mouse-1] #'org-roam-visit-thing)
@@ -924,12 +952,14 @@ Even though code below comes after loading org-roam, org-roam seems to be lazy l
 ;;    (format "[%d]" count)))
 
 ;;(setq org-roam-node-display-template "${tags:10} ${title:100} ${backlinkscount:6}")
+;;(setq org-roam-node-display-template "${tags:10} ${title:100}")
 
+(setq org-tags-column 0)
 
 #+end_src
 
 #+RESULTS:
-: ${tags:10} ${title:100} ${backlinkscount:6}
+: 0
 
 
 **** Hide properties draw in org-roam
@@ -1025,6 +1055,33 @@ Even though code below comes after loading org-roam, org-roam seems to be lazy l
 : jmb/counsel-ag-roam
 
 
+** Org-roam Hugo exporting
+
+#+begin_src emacs-lisp
+(use-package ox-hugo
+  :ensure t            ;Auto-install the package from Melpa (optional)
+  :after ox)
+
+#+end_src
+
+#+RESULTS:
+
+
+#+begin_src emacs-lisp
+(defun benmezger/org-roam-export-all ()
+  "Re-exports all Org-roam files to Hugo markdown."
+  (interactive)
+  (dolist (f (org-roam--list-all-files))
+    (with-current-buffer (find-file f)
+      (when (s-contains? "SETUPFILE" (buffer-string))
+        (org-hugo-export-wim-to-md)))))
+
+#+end_src
+
+#+RESULTS:
+: benmezger/org-roam-export-all
+
+
 ** Org Super Links - DISABLED
 
 Manually installed for now - not part of Melpa.. which might be a sign to not use it?
@@ -1038,7 +1095,7 @@ Disabled for now - generates Melp package error and not sure I want to use it an
 ;;	   ("C-c s C-l" . org-super-links-insert-link)))
 #+end_src
 
-** Org ox-rst
+** Org ox-rst (Restructured Text exporting)
 
 #+begin_src emacs-lisp
 
@@ -1276,3 +1333,213 @@ A minor mode for Emacs that implements a distraction-free writing mode similar t
 #+begin_src emacs-lisp
 ;;(use-package writeroom-mode)
 #+end_src
+
+
+* E-mail - MU4E
+
+** Load MU4E
+
+#+begin_src emacs-lisp
+(add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
+(use-package mu4e
+  :ensure nil
+  )
+(use-package org-mu4e
+  :ensure nil
+  )
+#+end_src
+
+#+RESULTS:
+
+** Configure accounts
+
+#+begin_src emacs-lisp
+(use-package org-mime)
+
+;; (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu4e/")
+;;(use-package mu4e)
+
+(setq mu4e-maildir (expand-file-name "~/Maildir"))
+
+; get mail
+(setq mu4e-get-mail-command "mbsync -c ~/.emacs.d/mu4e/.mbsyncrc -a"
+  ;; mu4e-html2text-command "w3m -T text/html" ;;using the default mu4e-shr2text
+  mu4e-view-prefer-html t
+  mu4e-update-interval 180
+  mu4e-headers-auto-update t
+  mu4e-compose-signature-auto-include nil
+  mu4e-compose-format-flowed t)
+
+;; to view selected message in the browser, no signin, just html mail
+(add-to-list 'mu4e-view-actions
+  '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+
+;; enable inline images
+(setq mu4e-view-show-images t)
+;; use imagemagick, if available
+(when (fboundp 'imagemagick-register-types)
+  (imagemagick-register-types))
+
+;; every new email composition gets its own frame!
+(setq mu4e-compose-in-new-frame t)
+
+;; don't save message to Sent Messages, IMAP takes care of this
+(setq mu4e-sent-messages-behavior 'delete)
+
+(add-hook 'mu4e-view-mode-hook #'visual-line-mode)
+
+;; <tab> to navigate to links, <RET> to open them in browser
+(add-hook 'mu4e-view-mode-hook
+  (lambda()
+;; try to emulate some of the eww key-bindings
+(local-set-key (kbd "<RET>") 'mu4e~view-browse-url-from-binding)
+(local-set-key (kbd "<tab>") 'shr-next-link)
+(local-set-key (kbd "<backtab>") 'shr-previous-link)))
+
+;; from https://www.reddit.com/r/emacs/comments/bfsck6/mu4e_for_dummies/elgoumx
+(add-hook 'mu4e-headers-mode-hook
+      (defun my/mu4e-change-headers ()
+	(interactive)
+	(setq mu4e-headers-fields
+	      `((:human-date . 25) ;; alternatively, use :date
+		(:flags . 6)
+		(:from . 22)
+		(:thread-subject . ,(- (window-body-width) 70)) ;; alternatively, use :subject
+		(:size . 7)))))
+
+;; if you use date instead of human-date in the above, use this setting
+;; give me ISO(ish) format date-time stamps in the header list
+;(setq mu4e-headers-date-format "%Y-%m-%d %H:%M")
+
+;; spell check
+(add-hook 'mu4e-compose-mode-hook
+    (defun my-do-compose-stuff ()
+       "My settings for message composition."
+       (visual-line-mode)
+       (org-mu4e-compose-org-mode)
+           (use-hard-newlines -1)
+       (flyspell-mode)))
+
+(require 'smtpmail)
+
+;;rename files when moving
+;;NEEDED FOR MBSYNC
+(setq mu4e-change-filenames-when-moving t)
+
+;;set up queue for offline email
+;;use mu mkdir  ~/Maildir/acc/queue to set up first
+(setq smtpmail-queue-mail nil)  ;; start in normal mode
+
+;;from the info manual
+(setq mu4e-attachment-dir  "~/Downloads")
+
+(setq message-kill-buffer-on-exit t)
+(setq mu4e-compose-dont-reply-to-self t)
+
+;;(use-package org-mu4e)
+
+;; convert org mode to HTML automatically
+(setq org-mu4e-convert-to-html t)
+
+;;from vxlabs config
+;; show full addresses in view message (instead of just names)
+;; toggle per name with M-RET
+(setq mu4e-view-show-addresses 't)
+
+;; don't ask when quitting
+(setq mu4e-confirm-quit nil)
+
+;; mu4e-context
+(setq mu4e-context-policy 'pick-first)
+(setq mu4e-compose-context-policy 'always-ask)
+(setq mu4e-contexts
+  (list
+   (make-mu4e-context
+    :name "Dixon" ;;for dixon-gmail
+    :enter-func (lambda () (mu4e-message "Entering context work"))
+    :leave-func (lambda () (mu4e-message "Leaving context work"))
+    :match-func (lambda (msg)
+		  (when msg
+		(mu4e-message-contact-field-matches
+		 msg '(:from :to :cc :bcc) "mark@dixon.se")))
+    :vars '((user-mail-address . "mark@dixon.se")
+	    (user-full-name . "Mark Dixon")
+	    (mu4e-sent-folder . "/dixon-gmail/[dixon].Sent Mail")
+	    (mu4e-drafts-folder . "/dixon-gmail/[dixon].drafts")
+	    (mu4e-trash-folder . "/dixon-gmail/[dixon].Trash")
+	    (mu4e-compose-signature . (concat "Formal Signature\n" "Emacs 25, org-mode 9, mu4e 1.0\n"))
+	    (mu4e-compose-format-flowed . t)
+	    (smtpmail-queue-dir . "~/Maildir/dixon-gmail/queue/cur")
+	    (message-send-mail-function . smtpmail-send-it)
+	    (smtpmail-smtp-user . "mark@dixon.se")
+	    (smtpmail-starttls-credentials . (("smtp.gmail.com" 587 nil nil)))
+	    (smtpmail-auth-credentials . (expand-file-name  "~/.authinfo.gpg"))
+	    (smtpmail-default-smtp-server . "smtp.gmail.com")
+	    (smtpmail-smtp-server . "smtp.gmail.com")
+	    (smtpmail-smtp-service . 587)
+	    (smtpmail-debug-info . t)
+	    (smtpmail-debug-verbose . t)
+	    (mu4e-maildir-shortcuts . ( ("/dixon-gmail/INBOX"            . ?i)
+					("/dixon-gmail/[dixon].Sent Mail" . ?s)
+					("/dixon-gmail/[dixon].Trash"       . ?t)
+					("/dixon-gmail/[dixon].All Mail"  . ?a)
+					("/dixon-gmail/[dixon].Starred"   . ?r)
+					("/dixon-gmail/[dixon].drafts"    . ?d)
+					))))
+   (make-mu4e-context
+    :name "Nitwit" ;;for acc2-gmail
+    :enter-func (lambda () (mu4e-message "Entering context personal"))
+    :leave-func (lambda () (mu4e-message "Leaving context personal"))
+    :match-func (lambda (msg)
+		  (when msg
+		(mu4e-message-contact-field-matches
+		 msg '(:from :to :cc :bcc) "mark@nitwit.se")))
+    :vars '((user-mail-address . "mark@nitwit.se")
+	    (user-full-name . "Mark Dixon")
+	    (mu4e-sent-folder . "/nitwit-gmail/[nitwit].Sent Mail")
+	    (mu4e-drafts-folder . "/nitwit-gmail/[nitwit].drafts")
+	    (mu4e-trash-folder . "/nitwit-gmail/[nitwit].Trash")
+	    (mu4e-compose-signature . (concat "Informal Signature\n" "Emacs is awesome!\n"))
+	    (mu4e-compose-format-flowed . t)
+	    (smtpmail-queue-dir . "~/Maildir/nitwit-gmail/queue/cur")
+	    (message-send-mail-function . smtpmail-send-it)
+	    (smtpmail-smtp-user . "mark@nitwit.se")
+	    (smtpmail-starttls-credentials . (("smtp.gmail.com" 587 nil nil)))
+	    (smtpmail-auth-credentials . (expand-file-name  "~/.authinfo.gpg"))
+	    (smtpmail-default-smtp-server . "smtp.gmail.com")
+	    (smtpmail-smtp-server . "smtp.gmail.com")
+	    (smtpmail-smtp-service . 587)
+	    (smtpmail-debug-info . t)
+	    (smtpmail-debug-verbose . t)
+	    (mu4e-maildir-shortcuts . ( ("/nitwit-gmail/INBOX"            . ?i)
+					("/nitwit-gmail/[nitwit].Sent Mail" . ?s)
+					("/nitwit-gmail/[nitwit].Trash"     . ?t)
+					("/nitwit-gmail/[nitwit].All Mail"  . ?a)
+					("/nitwit-gmail/[nitwit].Starred"   . ?r)
+					("/nitwit-gmail/[nitwit].drafts"    . ?d)
+					))))))
+#+end_src
+
+#+RESULTS:
+| #s(mu4e-context Dixon (lambda nil (mu4e-message Entering context work)) (lambda nil (mu4e-message Leaving context work)) (lambda (msg) (when msg (mu4e-message-contact-field-matches msg '(:from :to :cc :bcc) mark@dixon.se))) ((user-mail-address . mark@dixon.se) (user-full-name . Mark Dixon) (mu4e-sent-folder . /dixon-gmail/[dixon].Sent Mail) (mu4e-drafts-folder . /dixon-gmail/[dixon].drafts) (mu4e-trash-folder . /dixon-gmail/[dixon].Trash) (mu4e-compose-signature concat Formal Signature |
+
+
+
+** Make things look and function a bit nicer
+
+Allow for different colors for each column in mu4e-headers view:
+
+#+begin_src emacs-lisp
+
+(use-package mu4e-column-faces
+  :after mu4e
+  :config (mu4e-column-faces-mode))
+
+
+#+end_src
+
+
+#+RESULTS:
+
+
+

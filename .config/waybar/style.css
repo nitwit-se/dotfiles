@@ -80,25 +80,25 @@
 
 
 /* Chinolor - https://github.com/iwyvi/chinolor */
-@define-color light #f8f4ed;
-@define-color mediumlight #E4DFD7;
-@define-color mediumdark #4c566a;
-@define-color dark #1a241e;
-@define-color warning #fc7930;
-@define-color critical #ee3f4d;
-@define-color mode #2B312C;
-@define-color workspaces #2B312C;
-@define-color workspacesfocused #474B4C;
-@define-color spare1 #d3869b;
-@define-color spare2 #b16286;
-@define-color sound #A4ACA7;
-@define-color network #8A988E;
-@define-color pacman #617172;
-@define-color idle #474B4C;
-@define-color battery #2B312C;
-@define-color tray #1a241e;
-@define-color date #2B312C;
-@define-color time #474B4C;
+@define-color light #eceff4;
+@define-color lighttrans rgba(248,244,237,0.5);
+@define-color mediumlight #d8dee9;
+@define-color mediumdark #3b4252;
+@define-color dark #23272F;
+@define-color darktrans rgba(43,49,44,0.5);
+@define-color warning #d08770;
+@define-color critical #bf616a;
+@define-color mode #2e3440;
+@define-color workspaces #3b4252;
+@define-color workspacesfocused #5e81ac;
+@define-color sound #3b4252;
+@define-color network #2e3440;
+@define-color pacman #3b4252;
+@define-color idle #2e3440;
+@define-color battery #3b4252;
+@define-color tray #23272F;
+@define-color date #2e3440;
+@define-color time #3b4252;
 
 
 /* Reset all styles */
@@ -112,9 +112,9 @@
 
 /* The whole bar */
 #waybar {
-	background: rgba(46,52,64,0);
+    background: none; /*@darktrans;*/
 	color: @light;
-	font-family: Hack; /*Terminus, Siji;*/
+	font-family: SF Pro Text; /*Terminus, Siji;*/
 	font-size: 10pt;
 	/*font-weight: bold;*/
 }
@@ -215,21 +215,22 @@
 }*/
 
 #window {
-        color: @mediumlight;
-        background: @dark;
-        margin-top: 1px;
+        color: @mediumdark;
+        /*background: @dark;*/
+	background: @lighttrans;
+        padding-right: 4px;
 }
 
 #custom-alsa,
 #pulseaudio,
 #sndio {
 	background: @sound;
-	color: @dark;
+	color: @mediumlight;
 }
 
 #network {
 	background: @network;
-	color: @dark;
+	color: @mediumlight;
 }
 
 #memory {
@@ -239,22 +240,22 @@
 
 #custom-pacman {
 	background: @pacman;
-	color: @dark;
+	color: @mediumlight;
 }
 
 #cpu {
 	background: @cpu;
-	color: @light;
+	color: @mediumlight;
 }
 
 #temperature {
 	background: @temp;
-	color: @dark;
+	color: @mediumlight;
 }
 
 #language {
 	background: @idle;
-	color: @light;
+	color: @mediumlight;
 }
 
 #idle_inhibitor {
@@ -362,14 +363,14 @@
 
 #custom-arrowleft {
 	font-size: 16px;
-	color: @dark;
+	color: @lighttrans;
 	background: transparent;
         margin-top: 1px;
 }
 
 #custom-arrowright {
 	font-size: 16px;
-	color: @dark;
+	color: @lighttrans;
 	background: transparent;
         margin-top: 1px;
 }

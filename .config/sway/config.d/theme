@@ -3,19 +3,19 @@ exec_always ~/.config/sway/scripts/import-gsettings
 
 # Set inner/outer gaps
 gaps inner 3
-gaps outer 0
+gaps outer 1
 # smart_gaps off
 # On = no gaps when workspace has one window
 
 # Hide titlebar on windows:
-default_border pixel 1
+default_border pixel 2
 #default_border none
-smart_borders on
+#smart_borders off
 # On = no borders when workspace has one window
 
 # Default Font
 #font pango:Noto Sans Regular 10
-font pango:SF Pro 12
+font "SF Pro Text" Medium 12
 
 # Thin borders:
 smart_borders on

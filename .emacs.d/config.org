@@ -278,7 +278,7 @@ was
   :weight 'medium)
 (set-face-attribute 'variable-pitch nil
   :font "SF Pro Text"
-  :height 150
+  :height 180
   :weight 'medium)
 (set-face-attribute 'fixed-pitch nil
   :font "Hack Nerd Font"
@@ -1340,13 +1340,17 @@ A minor mode for Emacs that implements a distraction-free writing mode similar t
 ** Load MU4E
 
 #+begin_src emacs-lisp
-(add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
-(use-package mu4e
-  :ensure nil
-  )
-(use-package org-mu4e
-  :ensure nil
-  )
+(cond ((eq system-type 'gnu-linux)
+           ;; Linux-specific code goes here.
+
+       (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
+       (use-package mu4e
+         :ensure nil
+         )
+       (use-package org-mu4e
+         :ensure nil
+         )
+       ))
 #+end_src
 
 #+RESULTS:
@@ -1354,6 +1358,10 @@ A minor mode for Emacs that implements a distraction-free writing mode similar t
 ** Configure accounts
 
 #+begin_src emacs-lisp
+(cond ((eq system-type 'gnu-linux)
+           ;; Linux-specific code goes here.
+
+
 (use-package org-mime)
 
 ;; (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu4e/")
@@ -1371,8 +1379,8 @@ A minor mode for Emacs that implements a distraction-free writing mode similar t
   mu4e-compose-format-flowed t)
 
 ;; to view selected message in the browser, no signin, just html mail
-(add-to-list 'mu4e-view-actions
-  '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+;;(add-to-list 'mu4e-view-actions
+;;  '("ViewInBrowser" . mu4e-action-view-in-browser) t)
 
 ;; enable inline images
 (setq mu4e-view-show-images t)
@@ -1518,6 +1526,8 @@ A minor mode for Emacs that implements a distraction-free writing mode similar t
 					("/nitwit-gmail/[nitwit].Starred"   . ?r)
 					("/nitwit-gmail/[nitwit].drafts"    . ?d)
 					))))))
+
+))
 #+end_src
 
 #+RESULTS:
@@ -1531,15 +1541,19 @@ Allow for different colors for each column in mu4e-headers view:
 
 #+begin_src emacs-lisp
 
-(use-package mu4e-column-faces
-  :after mu4e
-  :config (mu4e-column-faces-mode))
+(cond ((eq system-type 'gnu-linux)
+           ;; Linux-specific code goes here.
+  (use-package mu4e-column-faces
+    :after mu4e
+    :config (mu4e-column-faces-mode))
+))
 
 
 #+end_src
 
-
 #+RESULTS:
+
+
 
 
 

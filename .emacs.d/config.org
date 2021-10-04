@@ -760,7 +760,7 @@ Org-bullets gives us attractive bullets rather than asterisks.
 ;;(setq org-superstar-headline-bullets-list
 ;;      '( "🌕" "🌖" "🌗" "🌘" "🌑" "🌒" "🌓" "🌔" ))
 (setq org-superstar-headline-bullets-list
-      '( " " ))
+      '( "• " ))
 ;; ❷ 	❸ 	❹ 	❺ 	❻
 
 (setq org-superstar-special-todo-items t)
@@ -768,19 +768,19 @@ Org-bullets gives us attractive bullets rather than asterisks.
 ;;org-superstar-todo-bullet-alist.
 
 (setq org-superstar-todo-bullet-alist
-        '(("TODO" . ? )
-          ("PROJ" . ? )
-          ("DOING" . ? )
-          ("STALLED" . ? )
-          ("TESTING" . ? )
-          ("CANCELLED" . ? )
-          ("DONE" . ? )))
+        '(("TODO" . ?Δ )
+          ("PROJ" . ?Σ )
+          ("DOING" . ?Λ )
+          ("STALLED" . ?Ξ )
+          ("TESTING" . ?Ω )
+          ("CANCELLED" . ?Χ )
+          ("DONE" . ?Θ )))      
 
 
 #+end_src
 
 #+RESULTS:
-: ((TODO . 63024) (PROJ . 61717) (DOING . 61641) (STALLED . 63198) (TESTING . 59217) (CANCELLED . 63063) (DONE . 63028))
+: ((TODO . 916) (PROJ . 931) (DOING . 923) (STALLED . 926) (TESTING . 937) (CANCELLED . 935) (DONE . 920))
 
 
 ** Org Link Abbreviations

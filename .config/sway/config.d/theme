@@ -3,7 +3,7 @@ exec_always ~/.config/sway/scripts/import-gsettings
 
 # Set inner/outer gaps
 gaps inner 3
-gaps outer 1
+gaps outer 2
 # smart_gaps off
 # On = no gaps when workspace has one window
 
@@ -18,7 +18,7 @@ default_border pixel 2
 font "SF Pro Text" Medium 12
 
 # Thin borders:
-smart_borders on
+smart_borders off
 
 # Set wallpaper:
 exec ~/.azotebg
@@ -29,7 +29,7 @@ for_window [shell="x_wayland"] title_format "%class - %title"
 
 ## Window decoration
 # class                 border  backgr. text    indicator child_border
-client.focused          #88c0d0 #434c5e #eceff4 #8fbcbb   #88c0d0
+client.focused          #88c0d0 #434c5e #eceff4 #b48ead   #5e81ac
 client.focused_inactive #88c0d0 #2e3440 #d8dee9 #4c566a   #4c566a
 client.unfocused        #88c0d0 #2e3440 #d8dee9 #4c566a   #4c566a
 client.urgent           #ebcb8b #ebcb8b #2e3440 #8fbcbb   #ebcb8b

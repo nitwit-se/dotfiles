@@ -7,15 +7,15 @@ FRAME_T = 0.01  # time taken between each frame of fade
 
 # transparency values
 CON_AC     = 1     # active window
-CON_INAC   = 0.8   # inactive window
+CON_INAC   = 0.85   # inactive window
 FLOAT_AC   = 1     # active floating window
 FLOAT_INAC = 0.85  # inactive floating window
 BOT_INAC   = 0.9   # bottom window
 
 
 # fade durations
-FADE_TIME      = 0.2
-ALT_FADE_TIME  = 0.1
+FADE_TIME      = 0.15
+ALT_FADE_TIME  = 0.15
 
 CON_OUT        = FADE_TIME      # window fading out
 CON_IN         = 0.15           # window fading in

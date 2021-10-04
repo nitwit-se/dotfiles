@@ -126,10 +126,14 @@
     },
      "network": {
         // "interface": "wlp2s0", // (Optional) To force the use of this interface
-        "format": "⚠ Disabled",
-        "format-wifi": " {essid}",
-        "format-ethernet": " {ifname}: {ipaddr}/{cidr}",
+        "format": "⚠",
+        "format-wifi": " {signalStrength}",
+        "format-ethernet": "",
         "format-disconnected": "⚠ Disconnected",
+        //"format": "⚠ Disabled",
+        //"format-wifi": " {essid}",
+        //"format-ethernet": " {ifname}: {ipaddr}/{cidr}",
+        //"format-disconnected": "⚠ Disconnected",
         "on-click": "connman-gtk"
     },
     "pulseaudio": {

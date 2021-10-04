@@ -215,10 +215,11 @@
 }*/
 
 #window {
-        color: @mediumdark;
+        color: #81a1c1;
         /*background: @dark;*/
-	background: @lighttrans;
+	background: @mediumdark;
         padding-right: 4px;
+        margin-top: 0px;
 }
 
 #custom-alsa,
@@ -363,14 +364,14 @@
 
 #custom-arrowleft {
 	font-size: 16px;
-	color: @lighttrans;
+	color: @mediumdark;
 	background: transparent;
-        margin-top: 1px;
+        margin-top: 0px;
 }
 
 #custom-arrowright {
 	font-size: 16px;
-	color: @lighttrans;
+	color: @mediumdark;
 	background: transparent;
-        margin-top: 1px;
+        margin-top: 0px;
 }

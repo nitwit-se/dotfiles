@@ -112,7 +112,7 @@
 
 /* The whole bar */
 #waybar {
-    background: none; /*@darktrans;*/
+    background: none;
 	color: @light;
 	font-family: SF Pro Text; /*Terminus, Siji;*/
 	font-size: 10pt;

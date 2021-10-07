@@ -634,10 +634,22 @@ Org Mode is =THE= killer feature within Emacs.  But it does need some tweaking.
 ;; links open in same frame
 (setq org-link-frame-setup '((file . find-file)))
 
+
 #+end_src
 
 #+RESULTS:
 : ((file . find-file))
+
+#+begin_src emacs-lisp
+
+(setq org-emphasis-alist
+  '(("*" (bold :foreground "Orange" ))
+))
+
+#+end_src
+
+#+RESULTS:
+| (bold :foreground Orange) |
 
 
 

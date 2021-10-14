@@ -31,7 +31,9 @@ set -g theme_date_format "+%a %H:%M"
 set -g theme_nerd_fonts yes
 set -g theme_show_exit_status yes
 #set -g default_user your_normal_user
-set -g theme_color_scheme gruvbox
+set -g theme_color_scheme nord
+set -g fish_color_autosuggestion '#4c566a'
+
 #set -g fish_prompt_pwd_dir_length 0
 #set -g theme_project_dir_length 1
 
@@ -189,14 +191,12 @@ else
     # Mac?
     kitty + complete setup fish | source
 
-    starship init fish | source
-
     # Set pyenv correctly..
     status is-login; and pyenv init --path | source
     pyenv init - | source
-
 end
 
 
 # neofetch
 ## set -x PATH "/usr/local/sbin" $PATH
+

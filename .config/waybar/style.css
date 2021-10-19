@@ -106,17 +106,18 @@
 	border: none;
 	border-radius: 0;
 	min-height: 0;
-	margin: 0;
+	margin: 0px;
 	padding: 0;
 }
 
 /* The whole bar */
 #waybar {
     background: none;
-	color: @light;
-	font-family: SF Pro Text; /*Terminus, Siji;*/
-	font-size: 10pt;
-	/*font-weight: bold;*/
+    /*background-color: @darktrans;*/
+    color: @light;
+    font-family: SF Pro Text; /*Terminus, Siji;*/
+    font-size: 10pt;
+    /*font-weight: bold;*/
 }
 
 /* Each module */
@@ -297,81 +298,79 @@
 }
 
 #custom-arrow1 {
-	font-size: 16px;
+	font-size: 148%;
 	color: @sound;
 	background: transparent;
 }
 
 #custom-arrow2 {
-	font-size: 16px;
+	font-size: 150%;
 	color: @network;
 	background: @sound;
 }
 
 #custom-arrow3 {
-	font-size: 16px;
+	font-size: 150%;
 	color: @pacman;
 	background: @network;
 }
 
 #custom-arrow4 {
-	font-size: 16px;
+	font-size: 150%;
 	color: @idle;
 	background: @pacman;
 }
 
 #custom-arrow5 {
-	font-size: 16px;
+	font-size: 150%;
 	color: @battery;
 	background: @idle;
 }
 
 #custom-arrow6 {
-	font-size: 16px;
+	font-size: 150%;
 	color: @tray;
 	background: @battery;
 }
 
 #custom-arrow7 {
-	font-size: 16px;
+	font-size: 150%;
 	color: @date;
 	background: @tray;
 }
 
 #custom-arrow8 {
-	font-size: 16px;
+	font-size: 150%;
 	color: @time;
 	background: @date;
 }
 
 #custom-arrow8a {
-	font-size: 16px;
+	font-size: 150%;
 	color: @date;
 	background: @tray;
 }
 
 #custom-arrow9 {
-	font-size: 16px;
+	font-size: 150%;
 	color: @mode;
 	background: @time;
 }
 
 #custom-arrow10 {
-	font-size: 16px;
+	font-size: 150%;
 	color: @workspaces;
 	background: transparent;
 }
 
 #custom-arrowleft {
-	font-size: 16px;
-	color: @mediumdark;
-	background: transparent;
-        margin-top: 0px;
+    font-size: 150%;
+    color: @mediumdark;
+    background: none;
 }
 
 #custom-arrowright {
-	font-size: 16px;
-	color: @mediumdark;
-	background: transparent;
-        margin-top: 0px;
+    font-size: 150%;
+    color: @mediumdark;
+    background: transparent;
 }

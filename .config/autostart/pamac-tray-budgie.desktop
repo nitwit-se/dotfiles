@@ -1,9 +1,2 @@
 [Desktop Entry]
-Hidden=true
-Name=Update Notifier
-Icon=update-notifier
-Exec=sh -c "GDK_BACKEND=x11 pamac-tray"
-Terminal=false
-Type=Application
-StartupNotify=false
-OnlyShowIn=Budgie;
+NotShowIn=i3

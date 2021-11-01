@@ -199,4 +199,4 @@ end
 
 # neofetch
 ## set -x PATH "/usr/local/sbin" $PATH
-
+set -x PATH $PATH "/var/lib/snapd/snap/bin" 

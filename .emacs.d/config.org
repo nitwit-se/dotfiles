@@ -294,7 +294,7 @@ was
   :slant 'italic)
 
 ;; Uncomment the following line if line spacing needs adjusting.
-(setq-default line-spacing 0.1)
+(setq-default line-spacing 0)
 
 ;; Needed if using emacsclient. Otherwise, your fonts will be smaller than expected.
 ;;(add-to-list 'default-frame-alist '(font . "Hack-14"))
@@ -302,7 +302,7 @@ was
 #+end_src
 
 #+RESULTS:
-: 0.1
+: 0
 
 
 
@@ -728,8 +728,26 @@ Org-bullets gives us attractive bullets rather than asterisks.
 
 #+begin_src emacs-lisp
 
+(require 'org-bars)
+(add-hook 'org-mode-hook #'org-bars-mode)
 
-(use-package org-superstar)
+(setq org-bars-stars '(:empty "*"
+                       :invisible "+"
+                       :visible "-"))
+
+(setq org-bars-color-options '(:only-one-color t
+                               :bar-color "#434c5e"))
+
+
+#+end_src
+
+#+RESULTS:
+| :only-one-color | t | :bar-color | #434c5e |
+
+#+begin_src emacs-lisp
+
+
+;;(use-package org-superstar)
 
 
 ;;; Titles and Sections
@@ -737,56 +755,56 @@ Org-bullets gives us attractive bullets rather than asterisks.
 ;;(setq org-hidden-keywords '(title))
 
 ;; set basic title font
-(set-face-attribute 'org-level-8 nil :weight 'normal :inherit 'variable-pitch :foreground "#5E81AC")
-(set-face-attribute 'org-level-7 nil :inherit 'org-level-8 :weight 'normal :height 1.02 :foreground "#6B8BB3")
-(set-face-attribute 'org-level-6 nil :inherit 'org-level-8 :weight 'normal :height 1.03 :foreground "#7896BA")
-(set-face-attribute 'org-level-5 nil :inherit 'org-level-8 :weight 'normal :height 1.04 :foreground "#86A1C1")
-(set-face-attribute 'org-level-4 nil :inherit 'org-level-8 :weight 'normal :height 1.05 :foreground "#93ABC8")
-(set-face-attribute 'org-level-3 nil :inherit 'org-level-8 :weight 'normal :height 1.1 :foreground "#A1B5CE")
-(set-face-attribute 'org-level-2 nil :inherit 'org-level-8 :weight 'normal :height 1.15 :foreground "#AEC0D5")
-(set-face-attribute 'org-level-1 nil :inherit 'org-level-8 :weight 'normal :height 1.2 :foreground "#BCCADC")
+;; (set-face-attribute 'org-level-8 nil :weight 'normal :inherit 'variable-pitch :foreground "#5E81AC")
+;; (set-face-attribute 'org-level-7 nil :inherit 'org-level-8 :weight 'normal :height 1.02 :foreground "#6B8BB3")
+;; (set-face-attribute 'org-level-6 nil :inherit 'org-level-8 :weight 'normal :height 1.03 :foreground "#7896BA")
+;; (set-face-attribute 'org-level-5 nil :inherit 'org-level-8 :weight 'normal :height 1.04 :foreground "#86A1C1")
+;; (set-face-attribute 'org-level-4 nil :inherit 'org-level-8 :weight 'normal :height 1.05 :foreground "#93ABC8")
+;; (set-face-attribute 'org-level-3 nil :inherit 'org-level-8 :weight 'normal :height 1.1 :foreground "#A1B5CE")
+;; (set-face-attribute 'org-level-2 nil :inherit 'org-level-8 :weight 'normal :height 1.15 :foreground "#AEC0D5")
+;; (set-face-attribute 'org-level-1 nil :inherit 'org-level-8 :weight 'normal :height 1.2 :foreground "#BCCADC")
 
-;; Only use the first 4 styles and do not cycle.
-(setq org-cycle-level-faces nil)
-(setq org-n-level-faces 8)
+;; ;; Only use the first 4 styles and do not cycle.
+;; (setq org-cycle-level-faces nil)
+;; (setq org-n-level-faces 8)
 
-;; Document Title
-(set-face-attribute 'org-document-title nil
-                    :height 1.4
-                    :foreground "#AFC0D5"
-                    :inherit 'org-level-8)
+;; ;; Document Title
+;; (set-face-attribute 'org-document-title nil
+;;                     :height 1.4
+;;                     :foreground "#AFC0D5"
+;;                     :inherit 'org-level-8)
 
 
-;; This is usually the default, but keep in mind it must be nil
-(setq org-hide-leading-stars nil)
-;; This line is necessary.
-(setq org-superstar-leading-bullet ?\s)
-;; If you use Org Indent you also need to add this, otherwise the
-;; above has no effect while Indent is enabled.
-(setq org-indent-mode-turns-on-hiding-stars nil)
+;; ;; This is usually the default, but keep in mind it must be nil
+;; (setq org-hide-leading-stars nil)
+;; ;; This line is necessary.
+;; (setq org-superstar-leading-bullet ?\s)
+;; ;; If you use Org Indent you also need to add this, otherwise the
+;; ;; above has no effect while Indent is enabled.
+;; (setq org-indent-mode-turns-on-hiding-stars nil)
 
-(add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
+;; (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
 
-;;(setq org-superstar-headline-bullets-list
-;;      '("❶" ("🞛" ?◈) "○" "▷"))
-;;(setq org-superstar-headline-bullets-list
-;;      '( "🌕" "🌖" "🌗" "🌘" "🌑" "🌒" "🌓" "🌔" ))
-(setq org-superstar-headline-bullets-list
-      '( "• " ))
-;; ❷ 	❸ 	❹ 	❺ 	❻
+;; ;;(setq org-superstar-headline-bullets-list
+;; ;;      '("❶" ("🞛" ?◈) "○" "▷"))
+;; ;;(setq org-superstar-headline-bullets-list
+;; ;;      '( "🌕" "🌖" "🌗" "🌘" "🌑" "🌒" "🌓" "🌔" ))
+;; (setq org-superstar-headline-bullets-list
+;;       '( "• " ))
+;; ;; ❷ 	❸ 	❹ 	❺ 	❻
 
-(setq org-superstar-special-todo-items t)
+;; (setq org-superstar-special-todo-items t)
 
-;;org-superstar-todo-bullet-alist.
+;; ;;org-superstar-todo-bullet-alist.
 
-(setq org-superstar-todo-bullet-alist
-        '(("TODO" . ?Δ )
-          ("PROJ" . ?Σ )
-          ("DOING" . ?Λ )
-          ("STALLED" . ?Ξ )
-          ("TESTING" . ?Ω )
-          ("CANCELLED" . ?Χ )
-          ("DONE" . ?Θ )))      
+;; (setq org-superstar-todo-bullet-alist
+;;         '(("TODO" . ?Δ )
+;;           ("PROJ" . ?Σ )
+;;           ("DOING" . ?Λ )
+;;           ("STALLED" . ?Ξ )
+;;           ("TESTING" . ?Ω )
+;;           ("CANCELLED" . ?Χ )
+;;           ("DONE" . ?Θ )))      
 
 
 #+end_src

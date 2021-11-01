@@ -39,7 +39,7 @@
 (require 'package)
 (setq package-enable-at-startup nil)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-(add-to-list 'load-path "~/.emacs.d/packages/org-super-links")
+(add-to-list 'load-path "~/.emacs.d/packages/")
 (unless package--initialized (package-initialize))
 
 

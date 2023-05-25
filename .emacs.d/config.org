@@ -1420,7 +1420,6 @@ Vertico provides a performant and minimalistic vertical completion UI based on t
 *** chatgpt-shell
 
 
-(setq chatgpt-shell-openai-key "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")
 
 (use-package chatgpt-shell
   :ensure nil

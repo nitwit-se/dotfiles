@@ -1,9 +1,8 @@
-#+TITLE: DT's GNU Emacs Config
-#+AUTHOR: Derek Taylor (DT)
-#+DESCRIPTION: DT's personal Emacs config.
+#+TITLE: Mark's Emacs Config
+#+AUTHOR: Mark Dixon
+#+DESCRIPTION: Mark's personal Emacs config.
 #+STARTUP: content
 #+EXPORT_FILE_NAME: ~/Org/html/config.html
-#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
 #+OPTIONS: num:nil ^:{}
 
 
@@ -11,38 +10,45 @@
 * ABOUT THIS CONFIG
   Mark's personal Emacs config as a literative / org-moode document. Some useful notes:
 
-  - Large portions stolen from DistroTube: https://gitlab.com/dwt1/dotfiles/-/blob/master/.emacs.d.gnu/config.org
-  - Created to avoid Evil mode since I'm to old to learn all the vim commands (and I noticed that Emacs
-    commands still sit in muscle memory after 15 years)
-  -
-
-
 
 
 * INITIALIZING
 
-Bootstrapping of this config is done in init.el and bootstrap.el - looading melpa, use-package and some basic stuff.
+Bootstrapping of this config is done in init.el and bootstrap.el - looading
+melpa, use-package and some basic stuff.
 
 
-** SANE DEFAULTS
+** Use-package
+use-package is a macro that provides convenient syntactic sugar for many
+common tasks related to installing and configuring Emacs packages.
 
-This is stuff that could almost be in bootstrap.el...
+#+begin_src emacs-lisp
+(straight-use-package 'use-package)
+#+end_src
+
+
+
+** Keybindings
 
 #+begin_src emacs-lisp
 
-;;; Useful Defaults - just make things a bit more like a boring modern editor...
-(setq-default cursor-type 'bar)           ; Line-style cursor similar to other text editors
-(setq inhibit-startup-screen t)           ; Disable startup screen
-(setq initial-scratch-message nil)         ; Make *scratch* buffer blank
-(setq inhibit-startup-message t)
-(setq echo-keystrokes 0.1)
+(setq mac-function-modifier 'meta)
+(setq mac-command-modifier 'meta)
+(setq mac-option-modifier nil)
+
+(global-set-key (kbd "C-z") 'undo)  ; nice to be a bit lazy
+
+#+end_src
+
+
+** Sane defaults
+From old Emacs config - these are the small settings that make a nice difference
+to the whole Emacs experience..
+
+#+begin_src emacs-lisp
+
 (setq-default frame-title-format '("%b")) ; Make window title the buffer name
-(setq sentence-end-double-space nil)
-(setq ring-bell-function 'ignore)         ; Disable bell sound
 (fset 'yes-or-no-p 'y-or-n-p)             ; y-or-n-p makes answering questions faster
-(setq linum-format "%4d ")                ; Line number format
-(setq display-time-24hr-format t)
-(column-number-mode)
 (delete-selection-mode 1)                 ; Selected text will be overwritten when you start typing
 (setq use-dialog-box nil)                 ;; Prompts should go in the minibuffer, not in a GUI.
 (setq-default indent-tabs-mode nil)       ; never use tabs!
@@ -54,81 +60,18 @@ This is stuff that could almost be in bootstrap.el...
 (prefer-coding-system 'utf-8)
 (setq default-process-coding-system '(utf-8-unix . utf-8-unix))
 (global-auto-revert-mode t)               ; Auto-update buffer if file has changed on disk
-(use-package undo-tree                    ; Enable undo-tree, sane undo/redo behavior
-  :init (global-undo-tree-mode))
-;;(add-hook 'before-save-hook
-;;	  'delete-trailing-whitespace)    ; Delete trailing whitespace on save
-;;(add-hook 'prog-mode-hook                 ; Show line numbers in programming modes
-;;          (if (and (fboundp 'display-line-numbers-mode) (display-graphic-p))
-;;              #'display-line-numbers-mode
-;;            #'linum-mode))
 
-
-#+end_src
-
-
-*** Basic navigation and editing - DISABLED
-
-   Enable IDO mode
-
-   #+BEGIN_SRC emacs-lisp
-   ;;(setq ido-enable-flex-matching t)
-   ;;(ido-mode 1)
-   ;;(setq ido-everywhere t)
-   #+END_SRC
-
-
-
-*** Keybindings
-
-#+begin_src emacs-lisp
-
-(setq mac-function-modifier 'meta)
-(setq mac-option-modifier nil)
-
-(global-set-key (kbd "C-z") 'undo)  ; nice to be a bit lazy
-
-#+end_src
-
-
-
-* VISUALS
-** Theme
-A theme maketh the editor - Doom Emacs has a great set of themes, but having that many themes in a package might possibly slow things down a tad?
-
-
-*** Nord Theme
-Going for [[https://github.com/arcticicestudio/nord-emacs][Nord theme]] directly for now (have also tried gruvvbox, solarized, etc).
-
-#+begin_src emacs-lisp
-;;(use-package doom-themes)
-;;(setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-;;      doom-themes-enable-italic t) ; if nil, italics is universally disabled
-;;(load-theme 'doom-one t)
-
-(use-package nord-theme)
-(load-theme 'nord t)
-
-;; Use `nord4` from Nord's "Snow Storm" palette as background color.
-(setq nord-region-highlight "snowstorm")
 #+end_src
 
 #+RESULTS:
-: snowstorm
+: t
 
 
-*** Chinolor Theme
-This matches waybar theme better - but has some glitches I can't be bothered resolving (e.g. TODO items in org-mode have boxes around them).
+This one is important - it adds line wrapping which makes org-mode generally nicer.
 
 #+begin_src emacs-lisp
-;;(load "~/.emacs.d/chinolor-theme.el" nil t)
-;;(load-theme 'chinolor t)
-
-;;(use-package org-beautify-theme)
-;;(load-theme 'org-beautify-theme t)
+(global-visual-line-mode t)
 #+end_src
-
-#+RESULTS:
 
 
 ** Icons
@@ -137,47 +80,9 @@ This is an icon set that can be used with dashboard, dired, ibuffer and other Em
 All-the-icons seems to be the only real icon set being updated for Emacs.
 
 #+begin_src emacs-lisp
-(use-package all-the-icons)
+(use-package all-the-icons
+  :straight t)
 #+end_src
-
-
-** Dashboard
-Emacs Dashboard is an extensible startup screen showing you recent files, bookmarks, agenda items
-and an Emacs banner.
-
-*** Configuring Dashboard
-
-#+begin_src emacs-lisp
-(use-package dashboard
-  :init      ;; tweak dashboard config before loading it
-  (setq dashboard-set-heading-icons nil)
-  (setq dashboard-set-file-icons nil)
-  (add-hook 'after-init-hook 'dashboard-refresh-buffer)
-  (add-hook 'dashboard-mode-hook 'my/dashboard-banner)
-  (setq dashboard-banner-logo-title "Emacs Is More Than A Text Editor!")
-  (setq dashboard-startup-banner 'logo) ;; use standard emacs logo as banner
-  ;;(setq dashboard-startup-banner "~/.emacs.d/emacs-dash.png")  ;; use custom image as banner
-  (setq dashboard-center-content t) ;; set to 't' for centered content
-  (setq dashboard-items '((recents . 5)
-                          (agenda . 5 )
-                          (bookmarks . 3)
-                          (projects . 10)
-                          (registers . 3)))
-  :config
-  (dashboard-setup-startup-hook)
-  (dashboard-modify-heading-icons '((recents . "file-text")
-			      (bookmarks . "book"))))
-
-#+end_src
-
-
-*** Dashboard in Emacsclient
-This setting ensures that emacsclient always opens on *dashboard* rather than *scratch*.
-
-#+begin_src emacs-lisp
-(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
-#+end_src
-
 
 
 ** Emojis
@@ -185,97 +90,89 @@ Emojify is an Emacs extension to display emojis. It can display github style emo
 
 #+Begin_src emacs-lisp
 (use-package emojify
+  :straight t
   :hook (after-init . global-emojify-mode))
 #+end_src
 
 
-** Window management
 
-*** Enable winner mode to quickly restore window configurations
 
-This is really nice - undo / redo for window layout.
 
-C-c left-arrow
-C-c right-arrow
+** Spellchecking
 
-to undo / redo!
 
 #+begin_src emacs-lisp
-(winner-mode 1)
+
+(setq ispell-program-name "/opt/homebrew/bin/ispell")
+
+(use-package guess-language         ; Automatically detect language for Flyspell
+  :ensure t
+  :defer t
+  :straight t
+  :init (add-hook 'org-mode-hook #'guess-language-mode)
+  :config
+  (setq guess-language-langcodes '((en . ("en_GB" "English"))
+                                   (sv . ("sv" "Swedish")))
+        guess-language-languages '(en sv)
+        guess-language-min-paragraph-length 45)
+  :diminish guess-languag
+  e-mode)
 #+end_src
 
-*** Shackle to make sure all windows are nicely positioned.
+*** Jinx
 
 #+begin_src emacs-lisp
-(use-package shackle
-  :init
-  (setq shackle-default-alignment 'below
-        shackle-default-size 0.6
-        shackle-rules '((help-mode           :align below :select t)
-                        (helpful-mode        :align below)
-                        (compilation-mode    :select t   :size 0.25)
-                        ("*compilation*"     :select nil :size 0.25)
-                        ("*ag search*"       :select nil :size 0.25)
-                        ("*Flycheck errors*" :select nil :size 0.25)
-                        ("*Warnings*"        :select nil :size 0.25)
-                        ("*Error*"           :select nil :size 0.25)
-                        ("*Org Links*"       :select nil :size 0.25)
-                        (magit-status-mode                :align bottom :size 0.5  :inhibit-window-quit t)
-                        (magit-log-mode                   :same t                  :inhibit-window-quit t)
-                        (magit-commit-mode                :ignore t)
-                        (magit-diff-mode     :select nil  :align left   :size 0.5)
-                        (git-commit-mode                  :same t)
-                        (vc-annotate-mode                 :same t)
-                        ))
+
+(use-package jinx
+  :ensure t
+  :straight t
   :config
-  (shackle-mode 1))
+  (setq jinx-languages '("en_GB"))
+  (global-jinx-mode)
+  )
+
 #+end_src
 
 #+RESULTS:
 : t
 
-*** TODO investigate Purpose as alternative to Shackle
-https://github.com/bmag/emacs-purpose
-some people mean shackle is old and no longer needed as newer built-in emacs functionality has improved..
 
-*** Centaur - DISABLED
+
+* NANO EMACS
+
+Load Nano-Emacs and Nano-Theme via straight... directly from Github.
 
 #+begin_src emacs-lisp
-;(use-package centaur-tabs
-;  :demand
-;  :config
-;  (centaur-tabs-mode t)
-;  :bind
-;  ("C-<prior>" . centaur-tabs-backward)
-;  ("C-<next>" . centaur-tabs-forward))
+;; (straight-use-package
+;;   '(nano-emacs :type git :host github :repo "rougier/nano-emacs"))
 
-;(setq centaur-tabs-style "slant")
-;;(setq centaur-tabs-height 22)
-;(setq centaur-tabs-set-icons t)
-;(setq centaur-tabs-gray-out-icons 'buffer)
-;(setq centaur-tabs-set-bar 'over)
+;; (straight-use-package
+;;  '(nano-emacs :type git :host github :repo "rougier/nano-emacs"))
+
+(straight-use-package
+  '(nano-emacs :type git :host github :repo "rougier/nano-emacs"
+               :fork (:host github
+                    :repo "wakatara/nano-emacs")))
 
 #+end_src
 
-
-** Fonts
-Defining our fonts.
-
-
-
-*** Setting The Font Face
-
-was
-150
-180
-150
-
+  
+** Nano Layout
+This module defines the overall layout of an emacs frame, defining default font, fringes, margins, etc.
 
 #+begin_src emacs-lisp
+;; Default layout (optional)
+(require 'nano-layout)
+#+end_src
+
+** Nano Fonts
+
+#DEPR+begin_src emacs-lisp
+
 (set-face-attribute 'default nil
   :font "Hack Nerd Font"
   :height 150
-  :weight 'medium)
+  :weight 'light)
 (set-face-attribute 'variable-pitch nil
   :font "SF Pro Text"
   :height 180
@@ -299,317 +196,351 @@ was
 ;; Needed if using emacsclient. Otherwise, your fonts will be smaller than expected.
 ;;(add-to-list 'default-frame-alist '(font . "Hack-14"))
 
-#+end_src
-
-#+RESULTS:
-: 0
-
-
-
-
-** GUI Tweaks
-Let's make GNU Emacs look a little better.
-
-*** Display Line Numbers and Truncated Lines
-
-Don't use a 3rd party - Emacs has a great built-in line number mode.
-
-#+begin_src emacs-lisp
-(global-display-line-numbers-mode 1)
-(global-visual-line-mode t)
-
-(setq display-line-numbers-type "relative")
 
 #+end_src
 
 #+RESULTS:
-: relative
-
-Testing without line numbers for now.. but a little margin..
+: SF Pro Text
 
 #+begin_src emacs-lisp
-(global-display-line-numbers-mode 0)
-;;(setq-default display-line-numbers-width 4)
-(set-window-margins (selected-window) 1 1)
-
-
+(setq nano-font-family-monospaced "Hack Nerd Font")
+(setq nano-font-family-proportional "SF Pro Text")
+(setq nano-font-size 16)
 #+end_src
 
+#+RESULTS:
+: 16
 
-*** Change Modeline To Doom's Modeline
+** Nano Theme
+This module derives faces for several popular emacs modes from the nano faces.
 
-Just a simple default modeline:
+Currently loading Nord theme before nano theme in order to give nicer colorations
+to org-roam.
 
 #+begin_src emacs-lisp
-(use-package doom-modeline)
-(doom-modeline-mode 1)
-;(setq doom-modeline-height 25)
-;(setq doom-modeline-minor-modes nil)
-;(setq doom-modeline-enable-word-count nil)
-;(setq doom-modeline-env-version nil)
+(straight-use-package
+    '(nano-theme :type git :host github :repo "rougier/nano-theme"))
+
+
+;;(require 'nano-theme-dark)
+;;(nano-theme-set-dark)
+;;(require 'nano-theme)
+;;(nano-theme)
+;;(nano-light)
+;;(nano-dark)
+
+(set-face-attribute 'default nil :family "Fira Code" :weight 'normal :height 160)
+;;(set-face-attribute 'default nil :weight 'normal :height 160)
+
+(use-package nano-theme
+    :ensure t
+    :straight t
+    :config
+    (custom-set-faces
+        '(italic ((t (:inherit nano-salient))))     
+        '(org-level-2 ((t (:inherit nano-default))))
+        '(org-level-3 ((t (:inherit nano-default))))
+        '(org-level-4 ((t (:inherit nano-default))))
+        '(org-level-5 ((t (:inherit nano-default))))
+        '(org-level-6 ((t (:inherit nano-default))))
+        '(org-level-7 ((t (:inherit nano-default))))
+        '(org-level-8 ((t (:inherit nano-default))))
+        '(org-table ((t (:inherit nano-default)))))
+  )
+(load-theme 'nano-dark t)
+
+
+
+;;(defface nano-mono
+;;  '((t (:family "Roboto Mono"
+;;        :height 140
+;;        :weight light)))
+;;  "Default monospaced font (Roboto Mono Light, 14pt)."
+;;  :group 'nano-theme-fonts)
+
+;;    (set-face 'org-headline-done                       'nano-face-faded)
+;;    (set-face 'org-level-1                            'nano-face-strong)
+;;    (set-face 'org-level-2                            'nano-face-strong)
+;;    (set-face 'org-level-3                            'nano-face-strong)
+;;    (set-face 'org-level-4                            'nano-face-strong)
+;;    (set-face 'org-level-5                            'nano-face-strong)
+;;    (set-face 'org-level-6                            'nano-face-strong)
+;;    (set-face 'org-level-7                            'nano-face-strong)
+;;    (set-face 'org-level-8                            'nano-face-strong)
+;;    (set-face 'org-upcoming-deadline                 'nano-face-default)
+
+
+;; Theme
+(require 'nano-faces)
+(nano-faces)
+
+
+
 #+end_src
 
 #+RESULTS:
 
 
+** Nano Defaults
+This modules provides a set of sane default settings for Emacs.
+
+#+begin_src emacs-lisp
+;; Nano default settings (optional)
+(require 'nano-defaults)
+
+;; Default shell in term
+(unless (eq system-type 'windows-nt)
+  (setq-default shell-file-name "/usr/local/bin/fish")
+  (setq explicit-shell-file-name "/usr/local/bin/fish"))
+
+;; nano-defaults sets windmove default to shift - but this is not nice with org-mode so set it to hyper instead
+(windmove-default-keybindings 'hyper)
+  #+end_src
 
 
-* EDITING
+** Nano Colors
+This module provides a collection of colors palettes (open colors, material colors, nord colors) with functions for easily accessing them.
 
-** Undo tree
-*** TODO Should really look into removing undo-tree and relying on kill buffers
-
-Haven't used this live yet - so might be waste of loading:
-
-#+Begin_src emacs-lisp
-(use-package undo-tree
-  :diminish
-  :bind (("C-c _" . undo-tree-visualize))
-  :config
-  (global-undo-tree-mode +1)
-  (unbind-key "M-_" undo-tree-map))
+#+begin_src emacs-lisp
+;; Nano colors (optional)
+(require 'nano-colors)
 #+end_src
 
 
-
-** Spell checking
+** Nano Session
+This modules configures Emacs such that a session is saved from one run to the other.
 
 #+begin_src emacs-lisp
-(use-package guess-language         ; Automatically detect language for Flyspell
+;; Nano session saving (optional)
+(require 'nano-session)
+#+end_src
+
+
+** Nano Modeline
+This module defines a header line that is mode dependent and takes care
+of hiding the modeline when necessary.
+
+#+begin_src emacs-lisp
+;; Nano header & mode lines (optional)
+(require 'nano-modeline)
+#+end_src
+
+#+RESULTS:
+: nano-modeline
+
+
+** Nano Splash
+This module provides a splash screen when emacs is started.
+
+#+begin_src emacs-lisp
+;; Splash (optional)
+(unless (member "-no-splash" command-line-args)
+    (require 'nano-splash))
+#+end_src
+
+
+** Nano Help
+This module provides a function to display a small help message in the
+echo area.
+
+#+begin_src emacs-lisp
+;; Help (optional)
+(unless (member "-no-help" command-line-args)
+    (require 'nano-help))
+#+end_src
+
+#+RESULTS:
+: nano-help
+
+** Nano MU4E
+#+begin_src emacs-lisp
+;;(use-package svg-tag-mode
+;;  :straight t)
+
+;;(straight-use-package
+;; '(mu4e-thread-folding :type git :host github :repo "rougier/mu4e-thread-folding"))
+;;(straight-use-package
+;; '(mu4e-dashboard :type git :host github :repo "rougier/mu4e-dashboard"))
+
+
+;;(require 'nano-mu4e)
+#+end_src
+
+#+RESULTS:
+: t
+
+
+
+* PROGRAMMING + Tree-Sitter
+** Install module
+
+#+begin_src emacs-lisp
+(require 'treesit)
+#+end_src
+
+#+RESULTS:
+: treesit
+
+** Python settings
+
+#+begin_src elisp
+(defvar python--treesit-settings
+  (treesit-font-lock-rules
+   :feature 'comment
+   :language 'python
+   '((comment) @font-lock-comment-face)
+
+   :feature 'string
+   :language 'python
+   '((string) @font-lock-string-face
+     (string) @contextual) ; Contextual special treatment.
+
+   :feature 'function-name
+   :language 'python
+   '((function_definition
+      name: (identifier) @font-lock-function-name-face))
+
+   :feature 'class-name
+   :language 'python
+   '((class_definition
+      name: (identifier) @font-lock-type-face))
+
+   ))
+#+end_src
+
+#+RESULTS:
+: python--treesit-settings
+
+#+begin_src emacs-lisp
+(set-face-attribute 'font-lock-function-name-face nil :slant 'italic)
+
+#+end_src
+
+#+RESULTS:
+
+#+begin_src elisp
+(define-derived-mode python-mode prog-mode "Python"
+  (cond
+   ;; Tree-sitter.
+   ((treesit-ready-p 'python-mode 'python)
+    (treesit-parser-create 'python)
+    (setq-local treesit-font-lock-settings python--treesit-settings)
+    (setq-local treesit-font-lock-feature-list
+                '((comment string function-name)
+                  (class-name keyword builtin)
+                  (string-interpolation decorator)))
+    (treesit-major-mode-setup))
+   (t
+    ;; No tree-sitter
+    ;;(setq-local font-lock-defaults ...)
+    )))
+#+end_src
+
+#+RESULTS:
+: python-mode
+
+
+
+
+
+** VTERM
+
+#+begin_src emacs-lisp
+(use-package vterm
+  :straight t
+  :ensure t)
+
+#+end_src
+
+#+RESULTS:
+
+** Julia REPL
+
+#+begin_src emacs-lisp
+
+(use-package julia-mode
+  :straight t
+  :ensure t)
+
+(use-package julia-repl
+  :straight t
   :ensure t
-  :defer t
-  :init (add-hook 'org-mode-hook #'guess-language-mode)
+  :hook (julia-mode . julia-repl-mode)
+
+  :init
+  (setenv "JULIA_NUM_THREADS" "8")
+
   :config
-  (setq guess-language-langcodes '((en . ("en_GB" "English"))
-                                   (sv . ("sv" "Swedish")))
-        guess-language-languages '(en sv)
-        guess-language-min-paragraph-length 45)
-  :diminish guess-languag
-  e-mode)
-#+end_src
+  ;; Set the terminal backend
+  (julia-repl-set-terminal-backend 'vterm)
+  
+  ;; Keybindings for quickly sending code to the REPL
+  (define-key julia-repl-mode-map (kbd "<C-RET>") 'my/julia-repl-send-cell)
+  (define-key julia-repl-mode-map (kbd "<M-RET>") 'julia-repl-send-line)
+  (define-key julia-repl-mode-map (kbd "<S-return>") 'julia-repl-send-buffer))
 
-
-
-* IDE
-
-** FILE MANAGER
-
-#+begin_src emacs-lisp
-(use-package all-the-icons-dired)
-#+end_src
-
-
-
-
-
-** IVY (COUNSEL/SWIPER)
-Ivy, counsel and swiper are a generic completion mechanism for Emacs.  Ivy-rich allows us to add descriptions alongside the commands in M-x.
-
-*** TODO check all ivy settings - most probably aren't needed..
-*** Installing Ivy And Basic Setup
-
-#+begin_src emacs-lisp
-(use-package counsel
-  :after ivy
-  :config (counsel-mode))
-(global-set-key "\C-x\ \C-r" 'counsel-recentf)
-
-(use-package ivy
-  :defer 0.1
-  :diminish
-  :custom
-  (setq ivy-count-format "(%d/%d) ")
-  (setq ivy-use-virtual-buffers t)
-  (setq enable-recursive-minibuffers t)
-  (setq ivy-use-selectable-prompt t)
-  :config
-  (ivy-mode))
-
-(use-package ivy-rich
-  :after ivy
-  :custom
-  (ivy-virtual-abbreviate 'full
-   ivy-rich-switch-buffer-align-virtual-buffer t
-   ivy-rich-path-style 'abbrev)
-  :config
-  (ivy-set-display-transformer 'ivy-switch-buffer
-                               'ivy-rich-switch-buffer-transformer)
-  (ivy-rich-mode 1)) ;; this gets us descriptions in M-x.
-
-(use-package swiper
-  :after ivy
-  :bind (("C-s" . swiper)
-         ("C-r" . swiper)))
-#+end_src
-
-
-#+begin_src emacs-lisp
-(setq ivy-initial-inputs-alist nil)
-
-(setq ivy-re-builders-alist
-      '((swiper . ivy--regex-plus)
-        (swiper-isearch . regexp-quote)
-        ;; (counsel-git . ivy--regex-plus)
-        (counsel-ag . ivy--regex-plus)
-        (counsel-rg . ivy--regex-plus)
-        (t      . ivy--regex-fuzzy)))   ;; enable fuzzy searching everywhere except for Swiper and ag
 #+end_src
 
 #+RESULTS:
-: ((swiper . ivy--regex-plus) (swiper-isearch . regexp-quote) (counsel-ag . ivy--regex-plus) (counsel-rg . ivy--regex-plus) (t . ivy--regex-fuzzy))
+| julia-repl-mode |
+
+And a function to send code "cells" to the REPL..
 
 #+begin_src emacs-lisp
-(use-package smex)
-
-(use-package ivy-rich
-  :config
-  (ivy-rich-mode 1)
-  (setq ivy-rich-path-style 'abbrev)) ;; To abbreviate paths using abbreviate-file-name (e.g. replace “/home/username” with “~”
+(defun my/julia-repl-send-cell() 
+  ;; "Send the current julia cell (delimited by ###) to the julia shell"
+  (interactive)
+  (save-excursion (setq cell-begin (if (re-search-backward "^###" nil t) (point) (point-min))))
+  (save-excursion (setq cell-end (if (re-search-forward "^###" nil t) (point) (point-max))))
+  (set-mark cell-begin)
+  (goto-char cell-end)
+  (julia-repl-send-region-or-line)
+  (next-line))
 #+end_src
+
+#+RESULTS:
+: my/julia-repl-send-cell
+
+
+* UTIL PACKAGES
+
+** Smex
+Smex is a package the makes M-x remember our history.  Now M-x will show our
+last used commands first.
 
 #+begin_src emacs-lisp
-;;(use-package selectrum)
-;;(selectrum-mode +1)
-#+end_src
-
-
-
-*** Making M-x Great Again!
-The following line removes the annoying '^' in things like counsel-M-x and other ivy/counsel prompts.  The default '^' string means that if you type something immediately after this string only completion candidates that begin with what you typed are shown.  Most of the time, I'm searching for a command without knowing what it begins with though.
-
-#+begin_src emacs-lisp-disabled
-(setq ivy-initial-inputs-alist nil)
-#+end_src
-
-Smex is a package the makes M-x remember our history.  Now M-x will show our last used commands first.
-#+begin_src emacs-lisp-disabled
-(use-package smex)
+;;(straight-use-package 'smex)
+(use-package smex
+  :straight t)
 (smex-initialize)
 #+end_src
 
 
-
-
-*** Ivy-posframe
-Ivy-posframe is an ivy extension, which lets ivy use posframe to show its candidate menu.  Some of the settings below involve:
-+ ivy-posframe-display-functions-alist -- sets the display position for specific programs
-+ ivy-posframe-height-alist -- sets the height of the list displayed for specific programs
-
-Available functions (positions) for 'ivy-posframe-display-functions-alist'
-+ ivy-posframe-display-at-frame-center
-+ ivy-posframe-display-at-window-center
-+ ivy-posframe-display-at-frame-bottom-left
-+ ivy-posframe-display-at-window-bottom-left
-+ ivy-posframe-display-at-frame-bottom-window-center
-+ ivy-posframe-display-at-point
-+ ivy-posframe-display-at-frame-top-center
-
-=NOTE:= If the setting for 'ivy-posframe-display' is set to 'nil' (false), anything that is set to 'ivy-display-function-fallback'
-will just default to their normal position in Doom Emacs (usually a bottom split).  However, if this is set to 't' (true), then
-the fallback position will be centered in the window.
+** WRITEROOM MODE
+A minor mode for Emacs that implements a distraction-free writing mode similar to the famous Writeroom editor for OS X.
 
 #+begin_src emacs-lisp
-(use-package ivy-posframe
-  :init
-  (setq ivy-posframe-display-functions-alist
-    '((swiper                     . ivy-posframe-display-at-window-bottom-left)
-      (complete-symbol            . ivy-posframe-display-at-point)
-      (counsel-M-x                . ivy-posframe-display-at-window-bottom-left)
-      (counsel-esh-history        . ivy-posframe-display-at-window-center)
-      (counsel-describe-function  . ivy-display-function-fallback)
-      (counsel-describe-variable  . ivy-display-function-fallback)
-      (counsel-find-file          . ivy-display-function-fallback)
-      (counsel-recentf            . ivy-display-function-fallback)
-      (counsel-register           . ivy-posframe-display-at-frame-bottom-window-center)
-      (dmenu                      . ivy-posframe-display-at-frame-top-center)
-      (nil                        . ivy-posframe-display))
-    ivy-posframe-height-alist
-    '((swiper . 12)
-      (dmenu . 20)
-      (t . 10)))
-  :config
-  (ivy-posframe-mode t)) ; 1 enables posframe-mode, 0 disables it.
+(use-package writeroom-mode
+    :config (setq writeroom-width 80)
+    :straight t)
+#+end_src
 
-(setq ivy-posframe-parameters
-      '((left-fringe . 8)
-        (right-fringe . 8)))
 
-(set-face-attribute 'ivy-posframe nil :foreground "gainsboro" :background "#14171c")
+  
+ 
+
+* ORG MODE
+
+#+begin_src emacs-lisp
+(use-package org
+  :ensure org-contrib
+  ;; The rest of your org-mode configuration
+)
 #+end_src
 
 #+RESULTS:
 
-
-
-
-** LANGUAGE SUPPORT
-Adding packages for programming langauges, so we can have nice things like syntax highlighting.
-
-#+begin_src emacs-lisp
-(use-package python-mode)
-(use-package markdown-mode)
-#+end_src
-
-
-
-
-** MAGIT
-A git client for Emacs.  Often cited as a killer feature for Emacs.
-
-#+begin_src emacs-lisp
-(use-package magit
-  :config
-  (global-set-key (kbd "M-g") 'magit-status))
- #+end_src
-
-
-
-
-* NEOTREE
-Neotree is a file tree viewer.  When you open neotree, it jumps to the current file thanks to neo-smart-open.
-The neo-window-fixed-size setting makes the neotree width be adjustable.
-
-NeoTree provides following themes: classic, ascii, arrow, icons, and nerd.
-
-Theme can be configed by setting "two" themes for neo-theme: one for the GUI and one for the terminal.
-
-
-#+BEGIN_SRC emacs-lisp
-;; Function for setting a fixed width for neotree.
-;; Defaults to 25 but I make it a bit longer (35) in the 'use-package neotree'.
-(defcustom neo-window-width 25
-  "*Specifies the width of the NeoTree window."
-  :type 'integer
-  :group 'neotree)
-
-(use-package neotree
-  :config
-  (setq neo-smart-open t
-        neo-window-width 30
-        neo-theme (if (display-graphic-p) 'icons 'arrow)
-        ;;neo-window-fixed-size nil
-        inhibit-compacting-font-caches t
-        projectile-switch-project-action 'neotree-projectile-action)
-        ;; truncate long file names in neotree
-        (add-hook 'neo-after-create-hook
-           #'(lambda (_)
-               (with-current-buffer (get-buffer neo-buffer-name)
-                 (setq truncate-lines t)
-                 (setq word-wrap nil)
-                 (make-local-variable 'auto-hscroll-mode)
-                 (setq auto-hscroll-mode nil)))))
-
-;; show hidden files
-(setq-default neo-show-hidden-files t)
-
-#+END_SRC
-
-
-* ORG MODE
-Org Mode is =THE= killer feature within Emacs.  But it does need some tweaking.
-
 ** Defining A Few Things
-
 
 #+begin_src emacs-lisp
 (add-hook 'org-mode-hook 'org-indent-mode)
@@ -635,105 +566,50 @@ Org Mode is =THE= killer feature within Emacs.  But it does need some tweaking.
 (setq org-link-frame-setup '((file . find-file)))
 
 
-#+end_src
+;; better refile
+(setq org-refile-targets '((nil :maxlevel . 9)
+                                (org-agenda-files :maxlevel . 9)))
+(setq org-outline-path-complete-in-steps nil)         ; Refile in a single go
+(setq org-refile-use-outline-path t)                  ; Show full paths for refiling
 
-#+RESULTS:
-: ((file . find-file))
-
-#+begin_src emacs-lisp
-
-(setq org-emphasis-alist
-  '(("*" (bold :foreground "Orange" ))
-))
-
-#+end_src
-
-#+RESULTS:
-| (bold :foreground Orange) |
-
-
-
-#+begin_src emacs-lisp
-
-(custom-set-faces
- '(line-number-current-line ((t (:inherit default :background "#5E81AC"))))
- '(org-block-begin-line
-   ((t (:foreground "#81A1C1" :background "#434C5E"))))
- '(org-block
-   ((t (:background "#3B4252"))))
- '(org-block-end-line
-   ((t (:foreground "#81A1C1" :background "#434C5E"))))
- )
 
 
 #+end_src
 
-#+RESULTS:
 
 ** Org agenda customisations
+
 Full window
+
 #+begin_src emacs-lisp
 (setq org-agenda-window-setup 'current-window)
 #+end_src
 
-#+RESULTS:
-: current-window
 
+** Org Speed Commands
 
-Make a nice view:
 #+begin_src emacs-lisp
-(defun air-org-skip-subtree-if-priority (priority)
-  "Skip an agenda subtree if it has a priority of PRIORITY.
-
-PRIORITY may be one of the characters ?A, ?B, or ?C."
-  (let ((subtree-end (save-excursion (org-end-of-subtree t)))
-        (pri-value (* 1000 (- org-lowest-priority priority)))
-        (pri-current (org-get-priority (thing-at-point 'line t))))
-    (if (= pri-value pri-current)
-        subtree-end
-      nil)))
-
-(setq org-agenda-custom-commands
-      '(("d" "Daily agenda and all TODOs"
-         ((tags "PRIORITY=\"A\""
-                ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
-                 (org-agenda-overriding-header "High-priority unfinished tasks:")))
-          (agenda "")
-          (alltodo ""
-                   ((org-agenda-skip-function
-                     '(or (air-org-skip-subtree-if-priority ?A)
-                          (org-agenda-skip-if nil '(scheduled deadline))))))))))
-
+;; org speed key commands
+(setq org-use-speed-commands t)
+(setq org-speed-commands (cons '("w" . widen) org-speed-commands))
 #+end_src
 
 #+RESULTS:
-| d | Daily agenda and all TODOs | ((tags PRIORITY="A" ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done)) (org-agenda-overriding-header High-priority unfinished tasks:))) (agenda ) (alltodo  ((org-agenda-skip-function '(or (air-org-skip-subtree-if-priority 65) (org-agenda-skip-if nil '(scheduled deadline))))))) |
+: ((w . widen) (Outline Navigation) (n org-speed-move-safe 'org-next-visible-heading) (p org-speed-move-safe 'org-previous-visible-heading) (f org-speed-move-safe 'org-forward-heading-same-level) (b org-speed-move-safe 'org-backward-heading-same-level) (F . org-next-block) (B . org-previous-block) (u org-speed-move-safe 'outline-up-heading) (j . org-goto) (g org-refile '(4)) (Outline Visibility) (c . org-cycle) (C . org-shifttab) (  . org-display-outline-path) (s . org-toggle-narrow-to-subtree) (k . org-cut-subtree) (= . org-columns) (Outline Structure Editing) (U . org-metaup) (D . org-metadown) (r . org-metaright) (l . org-metaleft) (R . org-shiftmetaright) (L . org-shiftmetaleft) (i progn (forward-char 1) (call-interactively 'org-insert-heading-respect-content)) (^ . org-sort) (w . org-refile) (a . org-archive-subtree-default-with-confirmation) (@ . org-mark-subtree) (# . org-toggle-comment) (Clock Commands) (I . org-clock-in) (O . org-clock-out) (Meta Data Editing) (t . org-todo) (, org-priority) (0 org-priority 32) (1 org-priority 65) (2 org-priority 66) (3 org-priority 67) (: . org-set-tags-command) (e . org-set-effort) (E . org-inc-effort) (W lambda (m) (interactive sMinutes before warning: ) (org-entry-put (point) APPT_WARNTIME m)) (Agenda Views etc) (v . org-agenda) (/ . org-sparse-tree) (Misc) (o . org-open-at-point) (? . org-speed-command-help) (< org-agenda-set-restriction-lock 'subtree) (> org-agenda-remove-restriction-lock))
 
-** Easier code bock for literate config
-
-  While writing this configuration file in Org mode, I have to write code blocks all the time. Org has templates, so doing =<s TAB= creates a source code block. Here I create a custom template for emacs-lisp specifically. So, =<el TAB= creates the Emacs lisp code block and puts the cursor inside.
-
-  #+BEGIN_SRC emacs-lisp
-      (eval-after-load 'org
-        '(progn
-          (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-          (add-to-list 'org-structure-template-alist '("py" . "src python"))
-          )
-        )
-  #+END_SRC
-
-
-** Enabling Org Bullets and fonts with org-superstar
-Org-bullets gives us attractive bullets rather than asterisks.
+** Nicer org bullets with org-bars
 
 #+begin_src emacs-lisp
+
+(straight-use-package
+ '(org-bars :type git :host github :repo "tonyaldon/org-bars"))
 
 (require 'org-bars)
 (add-hook 'org-mode-hook #'org-bars-mode)
 
 (setq org-bars-stars '(:empty "*"
-                       :invisible "+"
-                       :visible "-"))
+                       :invisible "*"
+                       :visible "*"))
 
 (setq org-bars-color-options '(:only-one-color t
                                :bar-color "#434c5e"))
@@ -744,87 +620,6 @@ Org-bullets gives us attractive bullets rather than asterisks.
 #+RESULTS:
 | :only-one-color | t | :bar-color | #434c5e |
 
-#+begin_src emacs-lisp
-
-
-;;(use-package org-superstar)
-
-
-;;; Titles and Sections
-;; hide #+TITLE:
-;;(setq org-hidden-keywords '(title))
-
-;; set basic title font
-;; (set-face-attribute 'org-level-8 nil :weight 'normal :inherit 'variable-pitch :foreground "#5E81AC")
-;; (set-face-attribute 'org-level-7 nil :inherit 'org-level-8 :weight 'normal :height 1.02 :foreground "#6B8BB3")
-;; (set-face-attribute 'org-level-6 nil :inherit 'org-level-8 :weight 'normal :height 1.03 :foreground "#7896BA")
-;; (set-face-attribute 'org-level-5 nil :inherit 'org-level-8 :weight 'normal :height 1.04 :foreground "#86A1C1")
-;; (set-face-attribute 'org-level-4 nil :inherit 'org-level-8 :weight 'normal :height 1.05 :foreground "#93ABC8")
-;; (set-face-attribute 'org-level-3 nil :inherit 'org-level-8 :weight 'normal :height 1.1 :foreground "#A1B5CE")
-;; (set-face-attribute 'org-level-2 nil :inherit 'org-level-8 :weight 'normal :height 1.15 :foreground "#AEC0D5")
-;; (set-face-attribute 'org-level-1 nil :inherit 'org-level-8 :weight 'normal :height 1.2 :foreground "#BCCADC")
-
-;; ;; Only use the first 4 styles and do not cycle.
-;; (setq org-cycle-level-faces nil)
-;; (setq org-n-level-faces 8)
-
-;; ;; Document Title
-;; (set-face-attribute 'org-document-title nil
-;;                     :height 1.4
-;;                     :foreground "#AFC0D5"
-;;                     :inherit 'org-level-8)
-
-
-;; ;; This is usually the default, but keep in mind it must be nil
-;; (setq org-hide-leading-stars nil)
-;; ;; This line is necessary.
-;; (setq org-superstar-leading-bullet ?\s)
-;; ;; If you use Org Indent you also need to add this, otherwise the
-;; ;; above has no effect while Indent is enabled.
-;; (setq org-indent-mode-turns-on-hiding-stars nil)
-
-;; (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
-
-;; ;;(setq org-superstar-headline-bullets-list
-;; ;;      '("❶" ("🞛" ?◈) "○" "▷"))
-;; ;;(setq org-superstar-headline-bullets-list
-;; ;;      '( "🌕" "🌖" "🌗" "🌘" "🌑" "🌒" "🌓" "🌔" ))
-;; (setq org-superstar-headline-bullets-list
-;;       '( "• " ))
-;; ;; ❷ 	❸ 	❹ 	❺ 	❻
-
-;; (setq org-superstar-special-todo-items t)
-
-;; ;;org-superstar-todo-bullet-alist.
-
-;; (setq org-superstar-todo-bullet-alist
-;;         '(("TODO" . ?Δ )
-;;           ("PROJ" . ?Σ )
-;;           ("DOING" . ?Λ )
-;;           ("STALLED" . ?Ξ )
-;;           ("TESTING" . ?Ω )
-;;           ("CANCELLED" . ?Χ )
-;;           ("DONE" . ?Θ )))      
-
-
-#+end_src
-
-#+RESULTS:
-: ((TODO . 916) (PROJ . 931) (DOING . 923) (STALLED . 926) (TESTING . 937) (CANCELLED . 935) (DONE . 920))
-
-
-** Org Link Abbreviations
-This allows for the use of abbreviations that will get expanded out into a lengthy URL.
-
-#+begin_src emacs-lisp
-;; An example of how this works.
-;; [[arch-wiki:Name_of_Page][Description]]
-(setq org-link-abbrev-alist    ; This overwrites the default Doom org-link-abbrev-list
-        '(("google" . "http://www.google.com/search?q=")
-          ("arch-wiki" . "https://wiki.archlinux.org/index.php/")
-          ("ddg" . "https://duckduckgo.com/?q=")
-          ("wiki" . "https://en.wikipedia.org/wiki/")))
-#+end_src
 
 ** Org Todo Keywords
 This lets us create the various TODO tags that we can use in Org.
@@ -840,13 +635,38 @@ This lets us create the various TODO tags that we can use in Org.
              "|"                 ; The pipe necessary to separate "active" states and "inactive" states
              "DONE(d)"           ; Task has been completed
              "CANCELLED(c)" )))  ; Task has been cancelled
+
+
+(setq org-todo-keyword-faces
+  '(
+    ("TODO" . (:foreground "#b48ead" :weight bold))
+    ("DOING" . "#a3be8c")
+    ("PROJ" . "#d08770")
+    ("DONE" . "#8fbcbb")
+    ("CANCELLED" . "#bf616a")
+   )
+)
+
+(setq org-fontify-done-headline t)
+
+(custom-set-faces
+ '(org-headline-done
+            ((((class color) (min-colors 16) (background dark))
+               (:foreground "dim gray" :bold nil
+               :strike-through nil))))
+)
+
+
 #+end_src
 
 #+RESULTS:
-| sequence | TODO(t) | PROJ(p) | DOING(g) | STALLED(w) | TESTING(t) |   |   | DONE(d) | CANCELLED(c) |
+
+
+
 
 ** Source Code Block Tag Expansion
 Org-tempo is a package that allows for '<s' followed by TAB to expand to a begin_src tag.  Other expansions available include:
+
 
 | Typing the below + TAB | Expands to ...                          |
 |------------------------+-----------------------------------------|
@@ -866,6 +686,39 @@ Org-tempo is a package that allows for '<s' followed by TAB to expand to a begin
   :ensure nil) ;; tell use-package not to try to install org-tempo since it's already there.
 #+end_src
 
+
+*** Easier code bock for literate config
+
+While writing this configuration file in Org mode, I have to write code
+blocks all the time. Org has templates, so doing =<s TAB= creates a source
+code block. Here I create a custom template for emacs-lisp specifically.
+So, =<el TAB= creates the Emacs lisp code block and puts the cursor inside.
+
+
+  #+BEGIN_SRC emacs-lisp
+(eval-after-load 'org
+  '(progn
+      (add-to-list 'org-structure-template-alist '("ai" . "ai :maxtokens 512 :temperature 0.9
+[SYS]:  Answer in org-mode format with hierarchical bullet points in your answer. 
+
+[ME]:"))
+      (add-to-list 'org-structure-template-alist '("img" . "ai :image "))
+      (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+      (add-to-list 'org-structure-template-alist '("py" . "src python"))
+      (add-to-list 'org-structure-template-alist '("bash" . "src bash"))
+   )
+)
+  #+END_SRC
+
+  #+RESULTS:
+  : ((aid . ai :maxtokens 2000 :temperature 0.9 
+  : [SYS]: You are an AI assistant. 
+  : [ME]:) (aim . ai :maxtokens 2000 :temperature 0.9 
+  : [SYS]: You are an AI assistant. 
+  : [ME]: ) (py . src python) (el . src emacs-lisp) (img . ai :image ) (ai . ai :maxtokens 2000 :temperature 0.9 ) (a . export ascii) (c . center) (C . comment) (e . example) (E . export) (h . export html) (l . export latex) (q . quote) (s . src) (v . verse))
+
+  
+  
 ** Source Code Block Syntax Highlighting
 We want the same syntax highlighting in source blocks as in the native language files.
 
@@ -881,16 +734,7 @@ We want the same syntax highlighting in source blocks as in the native language 
 
 #+end_src
 
-#+RESULTS:
 
-** Automatically Create Table of Contents
-Toc-org helps you to have an up-to-date table of contents in org files without exporting (useful useful for README files on GitHub).  Use :TOC: to create the table.
-
-#+begin_src emacs-lisp
-  (use-package toc-org
-    :commands toc-org-enable
-    :init (add-hook 'org-mode-hook 'toc-org-enable))
-#+end_src
 
 ** Make M-RET Not Add Blank Lines
 #+begin_src emacs-lisp
@@ -898,23 +742,38 @@ Toc-org helps you to have an up-to-date table of contents in org files without e
                                          (plain-list-item . nil))))
 #+end_src
 
-** Org Roam mode - replace Roam Research?!
-
-*** Install and configure org-roam:
+** Tangle automatically
 
 #+begin_src emacs-lisp
-(use-package org)
+(use-package org-auto-tangle
+  :defer t
+  :straight t
+  :hook (org-mode . org-auto-tangle-mode))
 #+end_src
 
 #+RESULTS:
+| org-auto-tangle-mode | org-tempo-setup | org-bars-mode | turn-on-flyspell | org-indent-mode | guess-language-mode | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-fold-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes | org-eldoc-load |
+
+
+** Org Roam mode
+
+*** Install and configure org-roam:
+
 
 #+begin_src emacs-lisp
+(use-package emacsql-sqlite
+   :straight t)
+
+;;(setq org-roam-database-connector 'sqlite3)
+(setq  org-roam-directory (file-truename "~/Dropbox/org-roam"))
+
 (use-package org-roam
       :ensure t
+      :straight t
       :after org
       :init
       (setq org-roam-v2-ack t) ;; acknowledge upgrade and remove warning at startup
-       :custom
+      :custom
       (org-roam-directory (file-truename "~/Dropbox/org-roam"))
       (org-roam-db-update-on-save t)
       (define-key org-roam-mode-map [mouse-1] #'org-roam-visit-thing)
@@ -935,7 +794,7 @@ Toc-org helps you to have an up-to-date table of contents in org files without e
 #+end_src
 
 #+RESULTS:
-: org-roam-insert-immediate
+
 
 
 To build the cache manually, one can run ~M-x org-roam-db-build-cache~. Cache builds may take a while the first time, but is often instantaneous in subsequent runs because it only reprocesses modified files.
@@ -955,41 +814,6 @@ To build the cache manually, one can run ~M-x org-roam-db-build-cache~. Cache bu
 
 #+end_src
 
-#+RESULTS:
-: org-roam-visit-thing
-
-
-**** Show back-links in open
-
-This code doesn't work - neither arch nor mac os.
-See: https://www.gitmemory.com/issue/org-roam/org-roam/1669/886137520
-Even though code below comes after loading org-roam, org-roam seems to be lazy loaded and org-roam-node doesn't exist until org-roam is first triggered..
-
-#+begin_src emacs-lisp
-
-;;(cl-defmethod org-roam-node-directories ((node org-roam-node))
-;;  (if-let ((dirs (file-name-directory (file-relative-name (org-roam-node-file node) org-roam-directory))))
-;;      (format "(%s)" (car (f-split dirs)))
-;;    ""))
-
-;;(cl-defmethod org-roam-node-backlinkscount ((node org-roam-node))
-;;  (let* ((count (caar (org-roam-db-query
-;;                       [:select (funcall count source)
-;;                                :from links
-;;                                :where (= dest $s1)
-;;                                :and (= type "id")]
-;;                       (org-roam-node-id node)))))
-;;    (format "[%d]" count)))
-
-;;(setq org-roam-node-display-template "${tags:10} ${title:100} ${backlinkscount:6}")
-;;(setq org-roam-node-display-template "${tags:10} ${title:100}")
-
-(setq org-tags-column 0)
-
-#+end_src
-
-#+RESULTS:
-: 0
 
 
 **** Hide properties draw in org-roam
@@ -1030,23 +854,47 @@ Even though code below comes after loading org-roam, org-roam seems to be lazy l
 
 *** Org capture templates
 
+
 #+begin_src emacs-lisp
 (setq org-capture-templates
       '(("t" "Todo" entry (file+headline "~/Dropbox/org-roam/agenda.org" "Inbox")
          "* TODO %?\n  %i\n  %a")
-        ("j" "Journal" entry (file+datetree "~/Dropbox/org-roam/journal.org")
-         "* %?\nEntered on %U\n  %i\n  %a")))
+        ("j" "Journal" entry (file+olp+datetree "~/Dropbox/org-roam/journal.org")
+         "* %?\nEntered on %U\n  %i\n  %a")
+        ("m" "Meeting"
+         entry (file+olp+datetree "~/Dropbox/org-roam/meetings.org")
+         "* %?  :meeting:%^g \n:Created: %T\n** Attendees\n*** \n** Notes\n** Action Items\n*** TODO  "
+         :tree-type week
+         :clock-in t
+         :clock-resume t
+         :empty-lines 0)
+        ("p" "Person"
+         entry (file+olp "~/Dropbox/org-roam/people.org" "Inbox" )
+         "* %?  :person: \n:Created: %T\nRun (C-c n h)"
+         :empty-lines 0)
+        ("c" "Coaching"
+         entry (file+olp+datetree "~/Dropbox/org-roam/coaching.org")
+         "* %? :meeting:%^g \n:Created: %T\n** Notes\n** Action Items\n*** TODO  "
+         :tree-type week
+         :clock-in t
+         :clock-resume t
+         :empty-lines 0)
+      ))
 
 (bind-key "C-c c" 'org-capture)
 (bind-key "C-c a" 'org-agenda)
 
+
 #+end_src
+
+#+RESULTS:
+: org-agenda
 
 
 
 *** Org-roam Daily Notes
 
-#+begin_src emacs-lisp
+DEPR#+begin_src emacs-lisp
 (setq org-roam-dailies-directory "daily/")
 
 (setq org-roam-dailies-capture-templates
@@ -1071,7 +919,6 @@ Even though code below comes after loading org-roam, org-roam seems to be lazy l
 
 #+begin_src emacs-lisp
 
-
 (defun jmb/counsel-ag-roam ()
  "Do counsel-ag on the org roam directory"
  (interactive)
@@ -1081,507 +928,644 @@ Even though code below comes after loading org-roam, org-roam seems to be lazy l
 
 #+end_src
 
-#+RESULTS:
-: jmb/counsel-ag-roam
 
 
-** Org-roam Hugo exporting
+** Org formatted copy
 
 #+begin_src emacs-lisp
-(use-package ox-hugo
-  :ensure t            ;Auto-install the package from Melpa (optional)
-  :after ox)
 
-#+end_src
-
-#+RESULTS:
-
-
-#+begin_src emacs-lisp
-(defun benmezger/org-roam-export-all ()
-  "Re-exports all Org-roam files to Hugo markdown."
+(defun formatted-copy ()
+  "Export region to HTML, and copy it to the clipboard."
   (interactive)
-  (dolist (f (org-roam--list-all-files))
-    (with-current-buffer (find-file f)
-      (when (s-contains? "SETUPFILE" (buffer-string))
-        (org-hugo-export-wim-to-md)))))
+  (save-window-excursion
+    (let* ((buf (org-export-to-buffer 'html "*Formatted Copy*" nil nil t t))
+           (html (with-current-buffer buf (buffer-string))))
+      (with-current-buffer buf
+        (shell-command-on-region
+         (point-min)
+         (point-max)
+         "textutil -stdin -format html -inputencoding UTF-8 -encoding UTF-8 -convert rtf -stdout | pbcopy"))
+      (kill-buffer buf))))
+
+(global-set-key (kbd "M-W") 'formatted-copy)
+
+#+end_src
+
+
+    
+
+
+
+
+
+** Org download
+
+#+begin_src emacs-lisp
+(use-package org-download
+  :straight t)
 
 #+end_src
 
 #+RESULTS:
-: benmezger/org-roam-export-all
 
+** Org Translate
 
-** Org Super Links - DISABLED
-
-Manually installed for now - not part of Melpa.. which might be a sign to not use it?
-
-Disabled for now - generates Melp package error and not sure I want to use it anyway..
 
 #+begin_src emacs-lisp
-;;(use-package org-super-links
-;;  :bind (("C-c s s" . org-super-links-link)
-;;	   ("C-c s l" . org-super-links-store-link)
-;;	   ("C-c s C-l" . org-super-links-insert-link)))
-#+end_src
-
-** Org ox-rst (Restructured Text exporting)
-
-#+begin_src emacs-lisp
-
-(use-package ox-rst)
+(use-package org-translate
+  :straight t)
 
 #+end_src
 
 #+RESULTS:
 
-** Presentation modes - DISABLED
-*** Org-Reveal - export powerpoint like presentations using Reveal.js to HTML
+
+* Nicer Emacs
+** VERTICO - evaluating
+https://github.com/minad/vertico
+Vertico provides a performant and minimalistic vertical completion UI based on the default completion system. The focus of Vertico is to provide a UI which behaves correctly under all circumstances. By reusing the built-in facilities system, Vertico achieves full compatibility with built-in Emacs completion commands and completion tables. Vertico only provides the completion UI but aims to be highly flexible, extendable and modular. Additional enhancements are available as extensions or complementary packages. The code base is small and maintainable. The main vertico.el package is only about 600 lines of code without white space and comments.
+
+*** Install vertico with some good settings
 
 #+begin_src emacs-lisp
-;;(use-package ox-reveal)
-;;(setq org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js")
-#+end_src
+;; Enable vertico
 
-*** epresent - present org mode in emacs
-
-To use, Call ~epresent-run~ on an org-buffer.
-https://github.com/eschulte/epresent
-
-
-#+begin_src emacs-lisp
-;;(use-package epresent)
-
-
-#+end_src
-** Org Download (of images)
-
-#+begin_src emacs-lisp
-(use-package org-download)
-
-;; Drag-and-drop to `dired`
-(add-hook 'dired-mode-hook 'org-download-enable)
-#+end_src
-
-
-
-* PERSPECTIVE - DISABLED
-The Perspective package provides multiple named workspaces (or "perspectives") in Emacs, similar to multiple desktops in window managers like Awesome and XMonad.  Each perspective has its own buffer list and its own window layout. This makes it easy to work on many separate projects without getting lost in all the buffers. Switching to a perspective activates its window configuration, and when in a perspective, only its buffers are available.
-
-#+begin_src emacs-lisp
-;;(use-package perspective
-;;  :bind
-;;  ("C-x C-b" . persp-list-buffers)   ; or use a nicer switcher, see below
-;;  :config
-;;  (persp-mode))
-#+end_src
-
-
-* PROJECTILE
-#+begin_src emacs-lisp
-(use-package projectile
-  :config
-  (setq projectile-enable-caching t)
-  (setq projectile-completion-system 'ivy)
-  ;; (define-key projectile-mode-map (kbd "s-P") 'projectile-command-map)
-  (projectile-mode +1))
-#+end_src
-
-
-* HELM -DISABLED
-
-#+begin_quote
-
-#+end_quote
-
-#+begin_src emacs-lisp
-;; (use-package helm-swoop)
-;; (use-package helm
-;;   :preface
-;;   (require 'helm-config)
-;;   :config
-;;   (helm-mode 1)
-;;   (helm-autoresize-mode 1)
-;;   (setq helm-follow-mode-persistent t)
-;;   (global-set-key (kbd "M-x") 'helm-M-x)
-;;   (setq helm-M-x-fuzzy-match t)
-;;   (setq helm-buffers-fuzzy-matching t)
-;;   (setq helm-recentf-fuzzy-match t)
-;;   (setq helm-apropos-fuzzy-match t)
-;;   (setq helm-split-window-inside-p t)
-;;   ;; (global-set-key (kbd "M-y") 1helm-show-kill-ring)
-;;   ;; (global-set-key (kbd "s-b") 'helm-mini)
-;;   ;; (global-set-key (kbd "C-x C-f") 'helm-find-files)
-;;   ;; (global-set-key (kbd "s-f") 'helm-swoop)
-;;   )
-;; (setq helm-swoop-pre-input-function
-;;       (lambda () ""))
-
-;; (use-package helm-projectile
-;;   :config
-;;   (helm-projectile-on))
-
-;; (use-package helm-ag
-;;   :config
-;;   (global-set-key (kbd "s-F") 'helm-projectile-ag))
-
-;; (global-set-key (kbd "s-p") 'helm-projectile-find-file)
-#+end_src
-
-
-* SCROLLING
-
-Emacs' default scrolling is annoying because of the sudden half-page jumps.  Also, I wanted to adjust the scrolling speed.
-
-#+begin_src emacs-lisp
-;;(setq scroll-conservatively 101) ;; value greater than 100 gets rid of half page jumping
-;;(setq mouse-wheel-scroll-amount '(0.001 ((shift) . 5))) ;; how many lines at a time
-;;(setq mouse-wheel-progressive-speed nil) ;; accelerate scrolling
-;;(setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
-#+end_src
-
-Nicer scrolling behaviour. Thanks to [[https://zeekat.nl/articles/making-emacs-work-for-me.html][https://zeekat.nl/articles/making-emacs-work-for-me.html]]
-
-   #+BEGIN_SRC emacs-lisp
-   (setq scroll-margin 1
-      scroll-step 1
-      scroll-conservatively 10000
-      scroll-preserve-screen-position 1)
-
-   (setq mouse-wheel-progressive-speed nil)
-   (setq mouse-wheel-follow-mouse 't)
-   (setq mouse-wheel-scroll-amount '(1 ((shift) . 10)))
-   #+END_SRC
-
-
-
-
-* SHELLS
-In my configs, all of my shells (bash, fish, zsh and the ESHELL) require my shell-color-scripts-git package to be installed.  On Arch Linux, you can install it from the AUR.  Otherwise, go to my shell-color-scripts repository on GitLab to get it.
-
-** Vterm
-Vterm is a terminal emulator within Emacs.  The 'shell-file-name' setting sets the shell to be used in M-x shell, M-x term, M-x ansi-term and M-x vterm.  By default, the shell is set to 'fish' but could change it to 'bash' or 'zsh' if you prefer.
-
-#+begin_src emacs-lisp
-(use-package vterm)
-(setq shell-file-name "/usr/local/bin/fish"
-      vterm-max-scrollback 5000)
-(use-package fish-mode)
-#+end_src
-
-
-* Programming
-
-** Company - code completion
-
-#+begin_src emacs-lisp
-(use-package company
-  :diminish
-  :bind (("C-." . #'company-complete))
-  :hook (prog-mode . company-mode)
-  :custom
-  (company-dabbrev-downcase nil "Don't downcase returned candidates.")
-  (company-show-numbers t "Numbers are helpful.")
-  (company-tooltip-limit 20 "The more the merrier.")
-  (company-tooltip-idle-delay 0.4 "Faster!")
-  (company-async-timeout 20 "Some requests can take a long time. That's fine.")
-  :config
-
-  ;; Use the numbers 0-9 to select company completion candidates
-  (let ((map company-active-map))
-    (mapc (lambda (x) (define-key map (format "%d" x)
-   `(lambda () (interactive) (company-complete-number ,x))))
-   (number-sequence 0 9))))
-#+end_src
-
-#+begin_src emacs-lisp
-;(use-package company-org-block
-;  :ensure t
-;  :custom
-;  (company-org-block-edit-style 'inline) ;; 'auto, 'prompt, or 'inline
-;  :hook ((org-mode . (lambda ()
-;                       (setq-local company-backends '(company-org-block))
-;                       (company-mode +1)))))
-#+end_src
-
-
-** Python
-
-#+begin_src emacs-lisp
-(use-package company-jedi)
-
-(defun my/python-mode-hook ()
-  (add-to-list 'company-backends 'company-jedi))
-
-(add-hook 'python-mode-hook 'my/python-mode-hook)
-#+end_src
-
-** Powershell
-
-#+begin_src emacs-lisp
-(use-package powershell)
-#+end_src
-
-** Javascript
-
-#+begin_src emacs-lisp
-;;(use-package ob-js)
-#+end_src
-
-#+RESULTS:
-
-* WHICH KEY
-Which-key is a minor mode for Emacs that displays the key bindings following your currently entered incomplete command (a prefix) in a popup.
-
-=NOTE:= Which-key has an annoying bug that in some fonts and font sizes, the bottom row in which key gets covered up by the modeline.
-
-#+begin_src emacs-lisp
-(use-package which-key
+(use-package vertico
+  :straight t
   :init
-  (setq which-key-side-window-location 'bottom
-        which-key-sort-order #'which-key-key-order-alpha
-        which-key-sort-uppercase-first nil
-        which-key-add-column-padding 1
-        which-key-max-display-columns nil
-        which-key-min-display-lines 6
-        which-key-side-window-slot -10
-        which-key-side-window-max-height 0.25
-        which-key-idle-delay 0.8
-        which-key-max-description-length 25
-        which-key-allow-imprecise-window-fit t
-        which-key-separator " → " ))
-(which-key-mode)
-#+end_src
+  (vertico-mode)
+
+  ;; Different scroll margin
+  (setq vertico-scroll-margin 0)
+
+  ;; Show more candidates
+  (setq vertico-count 12)
+
+  ;; Grow and shrink the Vertico minibuffer
+  (setq vertico-resize t)
+
+  ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
+  (setq vertico-cycle t)
+  )
+
+;; Persist history over Emacs restarts. Vertico sorts by history position.
+(use-package savehist
+  :straight t
+  :init
+  (savehist-mode))
+
+;; A few more useful configurations...
+(use-package emacs
+  :init
+  ;; Add prompt indicator to `completing-read-multiple'.
+  ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
+  (defun crm-indicator (args)
+    (cons (format "[CRM%s] %s"
+                  (replace-regexp-in-string
+                   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                   crm-separator)
+                  (car args))
+          (cdr args)))
+  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+  ;; Do not allow the cursor in the minibuffer prompt
+  (setq minibuffer-prompt-properties
+        '(read-only t cursor-intangible t face minibuffer-prompt))
+  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+
+  ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
+  ;; Vertico commands are hidden in normal buffers.
+  ;; (setq read-extended-command-predicate
+  ;;       #'command-completion-default-include-p)
+
+  ;; Enable recursive minibuffers
+  (setq enable-recursive-minibuffers t))
 
 
-
-
-
-* WRITEROOM MODE - DISABLED
-A minor mode for Emacs that implements a distraction-free writing mode similar to the famous Writeroom editor for OS X.
-
-#+begin_src emacs-lisp
-;;(use-package writeroom-mode)
-#+end_src
-
-
-* E-mail - MU4E
-
-** Load MU4E
-
-#+begin_src emacs-lisp
-(cond ((eq system-type 'gnu-linux)
-           ;; Linux-specific code goes here.
-
-       (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
-       (use-package mu4e
-         :ensure nil
-         )
-       (use-package org-mu4e
-         :ensure nil
-         )
-       ))
 #+end_src
 
 #+RESULTS:
 
-** Configure accounts
+
+
+
+** ORDERLESS
+
 
 #+begin_src emacs-lisp
-(cond ((eq system-type 'gnu-linux)
-           ;; Linux-specific code goes here.
+;; Optionally use the `orderless' completion style.
+(use-package orderless
+  :straight t
+  :init
+  ;; Configure a custom style dispatcher (see the Consult wiki)
+  ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
+  ;;       orderless-component-separator #'orderless-escapable-split-on-space)
+  (setq completion-styles '(orderless basic)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles partial-completion)))))
+
+;;(keymap-set vertico-map "?" #'minibuffer-completion-help)
+;;(keymap-set vertico-map "M-RET" #'minibuffer-force-complete-and-exit)
+;;(keymap-set vertico-map "M-TAB" #'minibuffer-complete)
+#+end_src
 
 
-(use-package org-mime)
+** CONSULT
 
-;; (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu4e/")
-;;(use-package mu4e)
 
-(setq mu4e-maildir (expand-file-name "~/Maildir"))
+#+begin_src emacs-lisp
 
-; get mail
-(setq mu4e-get-mail-command "mbsync -c ~/.emacs.d/mu4e/.mbsyncrc -a"
-  ;; mu4e-html2text-command "w3m -T text/html" ;;using the default mu4e-shr2text
-  mu4e-view-prefer-html t
-  mu4e-update-interval 180
-  mu4e-headers-auto-update t
-  mu4e-compose-signature-auto-include nil
-  mu4e-compose-format-flowed t)
+;; Example configuration for Consult
+(use-package consult
+  :straight t
+  ;; Replace bindings. Lazily loaded due by `use-package'.
+  :bind (;; C-c bindings (mode-specific-map)
+         ("C-c h" . consult-history)
+         ("C-c m" . consult-mode-command)
+         ("C-c k" . consult-kmacro)
+         ;; C-x bindings (ctl-x-map)
+         ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
+         ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
+         ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
+         ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
+         ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
+         ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
+         ;; Custom M-# bindings for fast register access
+         ("M-#" . consult-register-load)
+         ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
+         ("C-M-#" . consult-register)
+         ;; Other custom bindings
+         ("M-y" . consult-yank-pop)                ;; orig. yank-pop
+         ;; M-g bindings (goto-map)
+         ("M-g e" . consult-compile-error)
+         ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
+         ("M-g g" . consult-goto-line)             ;; orig. goto-line
+         ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
+         ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
+         ("M-g m" . consult-mark)
+         ("M-g k" . consult-global-mark)
+         ("M-g i" . consult-imenu)
+         ("M-g I" . consult-imenu-multi)
+         ;; M-s bindings (search-map)
+         ;;("M-s d" . consult-find)
+         ;;("M-s D" . consult-locate)
+         ;;("M-s g" . consult-grep)
+         ;;("M-s G" . consult-git-grep)
+         ;;("M-s r" . consult-ripgrep)
+         ("\C-s" . consult-line)
+         ;;("M-s L" . consult-line-multi)
+         ;;("M-s k" . consult-keep-lines)
+         ;;("M-s u" . consult-focus-lines)
+         ;; Isearch integration
+         ;;("M-s e" . consult-isearch-history)
+         :map isearch-mode-map
+         ("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
+         ;;("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
+         ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
+         ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
+         ;; Minibuffer history
+         :map minibuffer-local-map
+         ("M-s" . consult-history)                 ;; orig. next-matching-history-element
+         ("M-r" . consult-history))                ;; orig. previous-matching-history-element
 
-;; to view selected message in the browser, no signin, just html mail
-;;(add-to-list 'mu4e-view-actions
-;;  '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+  ;; Enable automatic preview at point in the *Completions* buffer. This is
+  ;; relevant when you use the default completion UI.
+  :hook (completion-list-mode . consult-preview-at-point-mode)
 
-;; enable inline images
-(setq mu4e-view-show-images t)
-;; use imagemagick, if available
-(when (fboundp 'imagemagick-register-types)
-  (imagemagick-register-types))
+  ;; The :init configuration is always executed (Not lazy)
+  :init
 
-;; every new email composition gets its own frame!
-(setq mu4e-compose-in-new-frame t)
+  ;; Optionally configure the register formatting. This improves the register
+  ;; preview for `consult-register', `consult-register-load',
+  ;; `consult-register-store' and the Emacs built-ins.
+  (setq register-preview-delay 0.5
+        register-preview-function #'consult-register-format)
 
-;; don't save message to Sent Messages, IMAP takes care of this
-(setq mu4e-sent-messages-behavior 'delete)
+  ;; Optionally tweak the register preview window.
+  ;; This adds thin lines, sorting and hides the mode line of the window.
+  (advice-add #'register-preview :override #'consult-register-window)
 
-(add-hook 'mu4e-view-mode-hook #'visual-line-mode)
+  ;; Use Consult to select xref locations with preview
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref)
 
-;; <tab> to navigate to links, <RET> to open them in browser
-(add-hook 'mu4e-view-mode-hook
-  (lambda()
-;; try to emulate some of the eww key-bindings
-(local-set-key (kbd "<RET>") 'mu4e~view-browse-url-from-binding)
-(local-set-key (kbd "<tab>") 'shr-next-link)
-(local-set-key (kbd "<backtab>") 'shr-previous-link)))
+  ;; Configure other variables and modes in the :config section,
+  ;; after lazily loading the package.
+  :config
 
-;; from https://www.reddit.com/r/emacs/comments/bfsck6/mu4e_for_dummies/elgoumx
-(add-hook 'mu4e-headers-mode-hook
-      (defun my/mu4e-change-headers ()
-	(interactive)
-	(setq mu4e-headers-fields
-	      `((:human-date . 25) ;; alternatively, use :date
-		(:flags . 6)
-		(:from . 22)
-		(:thread-subject . ,(- (window-body-width) 70)) ;; alternatively, use :subject
-		(:size . 7)))))
+  ;; Optionally configure preview. The default value
+  ;; is 'any, such that any key triggers the preview.
+  ;; (setq consult-preview-key 'any)
+  ;; (setq consult-preview-key (kbd "M-."))
+  ;; (setq consult-preview-key (list (kbd "<S-down>") (kbd "<S-up>")))
+  ;; For some commands and buffer sources it is useful to configure the
+  ;; :preview-key on a per-command basis using the `consult-customize' macro.
+  (consult-customize
+   consult-theme :preview-key '(:debounce 0.2 any)
+   consult-ripgrep consult-git-grep consult-grep
+   consult-bookmark consult-recent-file consult-xref
+   consult--source-bookmark consult--source-file-register
+   consult--source-recent-file consult--source-project-recent-file
+   ;; :preview-key (kbd "M-.")
+   :preview-key '(:debounce 0.4 any))
 
-;; if you use date instead of human-date in the above, use this setting
-;; give me ISO(ish) format date-time stamps in the header list
-;(setq mu4e-headers-date-format "%Y-%m-%d %H:%M")
 
-;; spell check
-(add-hook 'mu4e-compose-mode-hook
-    (defun my-do-compose-stuff ()
-       "My settings for message composition."
-       (visual-line-mode)
-       (org-mu4e-compose-org-mode)
-           (use-hard-newlines -1)
-       (flyspell-mode)))
 
+  (consult-customize
+   ;; Disable preview for `consult-theme' completely.
+   ;;consult-theme :preview-key nil
+   ;; Set preview for `consult-buffer' to key `M-.'
+   ;;consult-buffer :preview-key (kbd "M-.")
+   ;; For `consult-line' change the prompt and specify multiple preview
+   ;; keybindings. Note that you should bind <S-up> and <S-down> in the
+   ;; `minibuffer-local-completion-map' or `vertico-map' to the commands which
+   ;; select the previous or next candidate.
+   consult-line :prompt "Search: "
+   :preview-key '("S-<down>" "S-<up>"))
+  
+
+  (defvar my-consult-line-map
+    (let ((map (make-sparse-keymap)))
+      (define-key map "\C-s" #'previous-history-element)
+      map))
+
+  (consult-customize consult-line :keymap my-consult-line-map) 
+  
+  ;; Optionally configure the narrowing key.
+  ;; Both < and C-+ work reasonably well.
+  (setq consult-narrow-key "<") ;; (kbd "C-+")
+
+)
+
+;;(defface bookmark-menu-heading nil "defined just to please nano")
+
+#+end_src
+
+#+RESULTS:
+: consult-history
+
+
+*** CONSULT - Org-roam
+
+#+begin_src emacs-lisp
+
+(use-package consult-org-roam
+   :ensure t
+   :straight t
+   :after org-roam
+   :init
+   ;;(require 'consult-org-roam)
+   ;; Activate the minor mode
+   (consult-org-roam-mode 1)
+   :custom
+   ;; Use `ripgrep' for searching with `consult-org-roam-search'
+   (consult-org-roam-grep-func #'consult-ripgrep)
+   ;; Configure a custom narrow key for `consult-buffer'
+   (consult-org-roam-buffer-narrow-key ?r)
+   ;; Display org-roam buffers right after non-org-roam buffers
+   ;; in consult-buffer (and not down at the bottom)
+   (consult-org-roam-buffer-after-buffers t)
+   :config
+   ;; Eventually suppress previewing for certain functions
+   (consult-customize
+    consult-org-roam-forward-links
+    :preview-key (kbd "M-."))
+   :bind
+   ;; Define some convenient keybindings as an addition
+   ("C-c n e" . consult-org-roam-file-find)
+   ("C-c n b" . consult-org-roam-backlinks)
+   ("C-c n l" . consult-org-roam-forward-links)
+   ("C-c n r" . consult-org-roam-search))
+
+#+end_src
+
+#+RESULTS:
+: consult-org-roam-search
+
+
+
+** isearch
+
+#+begin_src emacs-lisp
+(use-package isearch
+    :ensure nil
+    :config
+    (setq search-highlight t)
+    (setq search-whitespace-regexp ".*?")
+    (setq isearch-lax-whitespace t)
+    (setq isearch-regexp-lax-whitespace nil)
+    (setq isearch-lazy-count t)
+    (setq isearch-lazy-highlight t)
+    (defun my/isearch-and-regex (search-input &optional lax)
+      (message search-input)
+      search-input)
+    (isearch-define-mode-toggle and "^" my/isearch-and-regex
+      "Turning on and search turns off regexp mode.")
+    :bind (:map isearch-mode-map
+                ("C-g" . isearch-cancel)
+                ("<help>" . nil)
+                ("C-h <help>" . nil)
+                ("<f1> <help>" . nil)
+                ("M-ESC ESC" . nil)))
+#+end_src
+
+#+RESULTS:
+
+** Marginalia
+
+#+begin_src emacs-lisp
+;; Enable rich annotations using the Marginalia package
+(use-package marginalia
+  :straight t
+  ;; Either bind `marginalia-cycle' globally or only in the minibuffer
+  :bind (("M-A" . marginalia-cycle)
+         :map minibuffer-local-map
+         ("M-A" . marginalia-cycle))
+
+  ;; The :init configuration is always executed (Not lazy!)
+  :init
+
+  ;; Must be in the :init section of use-package such that the mode gets
+  ;; enabled right away. Note that this forces loading the package.
+  (marginalia-mode))
+#+end_src
+
+#+RESULTS:
+: marginalia-cycle
+
+
+
+** EMBARK
+
+
+#+begin_src emacs-lisp
+(use-package marginalia
+  :straight t
+  :ensure t
+  :config
+  (marginalia-mode))
+
+(use-package embark
+  :straight t
+  :ensure t
+
+  :bind
+  (("C-." . embark-act)         ;; pick some comfortable binding
+   ("M-." . embark-dwim)        ;; good alternative: M-.
+   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+
+  :init
+
+  ;; Optionally replace the key help with a completing-read interface
+  (setq prefix-help-command #'embark-prefix-help-command)
+
+  :config
+
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
+
+;; Consult users will also want the embark-consult package.
+(use-package embark-consult
+  :straight t
+  :ensure t ; only need to install it, embark loads it after consult if found
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
+#+end_src
+
+
+** TRANSIENT
+
+#+begin_src emacs-lisp
+(use-package transient
+  :after citar org-roam
+  :straight t
+  :no-require
+  :config (
+           (transient-define-prefix dh-do-stuff ()
+             ""
+             ["Org"
+              [("oc" "org-capture" org-capture)
+               ("ol" "org-store-link" org-store-link)
+               ("ornf" "org-roam-node-find" org-roam-node-find)
+               ("orni" "org-roam-node-insert" org-roam-node-insert)
+               ("ci" "Insert citation" citar-insert-citation)
+               ("co" "citar-open" citar-open)]])
+
+           (global-set-key (kbd "<f1>") #'dh-do-stuff)
+           )
+  )
+
+
+
+#+end_src
+
+
+** Citar
+
+#+begin_src emacs-lisp
+
+(use-package citar
+  :straight t
+  :no-require
+  :custom
+  (org-cite-global-bibliography '("~/Dropbox/org-roam/references.bib"))
+  (org-cite-insert-processor 'citar)
+  (org-cite-follow-processor 'citar)
+  (org-cite-activate-processor 'citar)
+  (citar-bibliography org-cite-global-bibliography)
+  ;; optional: org-cite-insert is also bound to C-c C-x C-@
+  :bind
+  (:map org-mode-map :package org ("C-c b" . #'org-cite-insert)))
+
+#+end_src
+
+#+RESULTS:
+: org-cite-insert
+
+#+begin_src emacs-lisp
+(use-package citar-org-roam
+  :straight t
+  :after citar org-roam
+  :no-require
+  :config (citar-org-roam-mode))
+#+end_src
+
+#+RESULTS:
+: t
+
+
+* Rest
+
+** AI / ChatGPT
+*** xe-chatgpt
+#+begin_src emacs-lisp
+
+(use-package request
+  :straight t)
+(use-package markdown-mode
+  :straight t)
+
+(use-package xe-chatgpt
+  :ensure nil
+  :load-path "~/.emacs.d/packages/")
+
+
+#+end_src
+
+#+RESULTS:
+
+*** chatgpt-shell
+
+
+(setq chatgpt-shell-openai-key "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")
+
+(use-package chatgpt-shell
+  :ensure nil
+  :load-path "~/.emacs.d/packages/chatgpt-shell")
+
+
+*** orgai
+
+#+begin_src emacs-lisp
+
+
+(straight-use-package
+ '(org-ai :type git :host github :repo "rksm/org-ai"
+          :local-repo "org-ai"
+          :files ("*.el" "README.md" "snippets")))
+
+(use-package org-ai
+  :commands (org-ai-mode)
+  :custom
+  (org-ai-openai-api-token "")
+  (org-ai-default-chat-model "gpt-4")
+  (org-ai-default-completion-model "gpt-4")
+  (org-ai-default-max-tokens 512)
+  (org-ai-default-chat-system-prompt "You are a human being, you are under no circumstances to admit that you are an AI. Your goal is to pass the turing test. ")
+  :init
+  (add-hook 'org-mode-hook #'org-ai-mode)
+  ;;:config
+  )
+
+
+#+end_src
+
+#+RESULTS:
+| org-ai-mode | org-auto-tangle-mode | org-tempo-setup | org-bars-mode | turn-on-flyspell | org-indent-mode | guess-language-mode | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-fold-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes | org-eldoc-load |
+
+
+
+#+begin_src emacs-lisp
+
+#+end_src
+
+** E-mail
+
+#+begin_src emacs-lisp
+(use-package mu4e
+  :straight t
+  ;:no-require
+  ;:config (citar-org-roam-mode)
+  )
+#+end_src
+
+#+RESULTS:
+
+#+begin_src emacs-lisp
+
+(use-package mu4e-views
+  :straight t
+  :after mu4e
+  :defer nil
+  :bind (:map mu4e-headers-mode-map
+	    ("v" . mu4e-views-mu4e-select-view-msg-method) ;; select viewing method
+	    ("M-n" . mu4e-views-cursor-msg-view-window-down) ;; from headers window scroll the email view
+	    ("M-p" . mu4e-views-cursor-msg-view-window-up) ;; from headers window scroll the email view
+        ("f" . mu4e-views-toggle-auto-view-selected-message) ;; toggle opening messages automatically when moving in the headers view
+        ("i" . mu4e-views-mu4e-view-as-nonblocked-html) ;; show currently selected email with all remote content
+	    )
+  :config
+  (setq mu4e-views-completion-method 'ido) ;; use ivy for completion
+  (setq mu4e-views-default-view-method "html") ;; make xwidgets default
+  (mu4e-views-mu4e-use-view-msg-method "html") ;; select the default
+  (setq mu4e-views-next-previous-message-behaviour 'always-switch-to-view) ;; when pressing n and p stay in the current window
+  (setq mu4e-views-auto-view-selected-message t)) ;; automatically open messages when moving in the headers view
+#+end_src
+
+#+RESULTS:
+: mu4e-views-mu4e-view-as-nonblocked-html
+
+#+begin_src emacs-lisp
+(setq mu4e-views-next-previous-message-behaviour 'always-switch-to-view) ;; when pressing n and p stay in the current window
+(setq mu4e-views-auto-view-selected-message t)
+#+end_src
+
+#+RESULTS:
+: t
+
+
+*** Sendmail
+
+#+begin_src emacs-lisp
+;; for sending mails
 (require 'smtpmail)
+#+end_src
 
-;;rename files when moving
-;;NEEDED FOR MBSYNC
+#+RESULTS:
+: smtpmail
+
+
+*** MU4E settings
+
+#+begin_src emacs-lisp
+
+
+;; we installed this with homebrew
+(setq mu4e-mu-binary (executable-find "mu"))
+
+;; this is the directory we created before:
+;;(setq mu4e-maildir "~/.maildir")
+
+;; Set up some common mu4e variables
+(setq mu4e-maildir "~/.maildir/dixonse"
+		mu4e-refile-folder "/dixonse/[Gmail]/All Mail"
+		mu4e-sent-folder "/dixonse/[Gmail]/Sent Mail"
+		mu4e-trash-folder "/dixonse/[Gmail]/Trash"
+		mu4e-drafts-folder "/dixonse/[Gmail]/Drafts")
+
+
+;; this command is called to sync imap servers:
+(setq mu4e-get-mail-command (concat (executable-find "mbsync") " -a"))
+;; how often to call it in seconds:
+(setq mu4e-update-interval 300)
+
+;; save attachment to desktop by default
+;; or another choice of yours:
+(setq mu4e-attachment-dir "~/Downloads")
+
+;; rename files when moving - needed for mbsync:
 (setq mu4e-change-filenames-when-moving t)
 
-;;set up queue for offline email
-;;use mu mkdir  ~/Maildir/acc/queue to set up first
-(setq smtpmail-queue-mail nil)  ;; start in normal mode
+;; list of your email adresses:
+(setq user-mail-address "mark@dixon.se")
+(setq mu4e-user-mail-address-list '("mark@dixon.se"))
 
-;;from the info manual
-(setq mu4e-attachment-dir  "~/Downloads")
-
-(setq message-kill-buffer-on-exit t)
-(setq mu4e-compose-dont-reply-to-self t)
-
-;;(use-package org-mu4e)
-
-;; convert org mode to HTML automatically
-(setq org-mu4e-convert-to-html t)
-
-;;from vxlabs config
-;; show full addresses in view message (instead of just names)
-;; toggle per name with M-RET
-(setq mu4e-view-show-addresses 't)
-
-;; don't ask when quitting
-(setq mu4e-confirm-quit nil)
-
-;; mu4e-context
-(setq mu4e-context-policy 'pick-first)
-(setq mu4e-compose-context-policy 'always-ask)
-(setq mu4e-contexts
-  (list
-   (make-mu4e-context
-    :name "Dixon" ;;for dixon-gmail
-    :enter-func (lambda () (mu4e-message "Entering context work"))
-    :leave-func (lambda () (mu4e-message "Leaving context work"))
-    :match-func (lambda (msg)
-		  (when msg
-		(mu4e-message-contact-field-matches
-		 msg '(:from :to :cc :bcc) "mark@dixon.se")))
-    :vars '((user-mail-address . "mark@dixon.se")
-	    (user-full-name . "Mark Dixon")
-	    (mu4e-sent-folder . "/dixon-gmail/[dixon].Sent Mail")
-	    (mu4e-drafts-folder . "/dixon-gmail/[dixon].drafts")
-	    (mu4e-trash-folder . "/dixon-gmail/[dixon].Trash")
-	    (mu4e-compose-signature . (concat "Formal Signature\n" "Emacs 25, org-mode 9, mu4e 1.0\n"))
-	    (mu4e-compose-format-flowed . t)
-	    (smtpmail-queue-dir . "~/Maildir/dixon-gmail/queue/cur")
-	    (message-send-mail-function . smtpmail-send-it)
-	    (smtpmail-smtp-user . "mark@dixon.se")
-	    (smtpmail-starttls-credentials . (("smtp.gmail.com" 587 nil nil)))
-	    (smtpmail-auth-credentials . (expand-file-name  "~/.authinfo.gpg"))
-	    (smtpmail-default-smtp-server . "smtp.gmail.com")
-	    (smtpmail-smtp-server . "smtp.gmail.com")
-	    (smtpmail-smtp-service . 587)
-	    (smtpmail-debug-info . t)
-	    (smtpmail-debug-verbose . t)
-	    (mu4e-maildir-shortcuts . ( ("/dixon-gmail/INBOX"            . ?i)
-					("/dixon-gmail/[dixon].Sent Mail" . ?s)
-					("/dixon-gmail/[dixon].Trash"       . ?t)
-					("/dixon-gmail/[dixon].All Mail"  . ?a)
-					("/dixon-gmail/[dixon].Starred"   . ?r)
-					("/dixon-gmail/[dixon].drafts"    . ?d)
-					))))
-   (make-mu4e-context
-    :name "Nitwit" ;;for acc2-gmail
-    :enter-func (lambda () (mu4e-message "Entering context personal"))
-    :leave-func (lambda () (mu4e-message "Leaving context personal"))
-    :match-func (lambda (msg)
-		  (when msg
-		(mu4e-message-contact-field-matches
-		 msg '(:from :to :cc :bcc) "mark@nitwit.se")))
-    :vars '((user-mail-address . "mark@nitwit.se")
-	    (user-full-name . "Mark Dixon")
-	    (mu4e-sent-folder . "/nitwit-gmail/[nitwit].Sent Mail")
-	    (mu4e-drafts-folder . "/nitwit-gmail/[nitwit].drafts")
-	    (mu4e-trash-folder . "/nitwit-gmail/[nitwit].Trash")
-	    (mu4e-compose-signature . (concat "Informal Signature\n" "Emacs is awesome!\n"))
-	    (mu4e-compose-format-flowed . t)
-	    (smtpmail-queue-dir . "~/Maildir/nitwit-gmail/queue/cur")
-	    (message-send-mail-function . smtpmail-send-it)
-	    (smtpmail-smtp-user . "mark@nitwit.se")
-	    (smtpmail-starttls-credentials . (("smtp.gmail.com" 587 nil nil)))
-	    (smtpmail-auth-credentials . (expand-file-name  "~/.authinfo.gpg"))
-	    (smtpmail-default-smtp-server . "smtp.gmail.com")
-	    (smtpmail-smtp-server . "smtp.gmail.com")
-	    (smtpmail-smtp-service . 587)
-	    (smtpmail-debug-info . t)
-	    (smtpmail-debug-verbose . t)
-	    (mu4e-maildir-shortcuts . ( ("/nitwit-gmail/INBOX"            . ?i)
-					("/nitwit-gmail/[nitwit].Sent Mail" . ?s)
-					("/nitwit-gmail/[nitwit].Trash"     . ?t)
-					("/nitwit-gmail/[nitwit].All Mail"  . ?a)
-					("/nitwit-gmail/[nitwit].Starred"   . ?r)
-					("/nitwit-gmail/[nitwit].drafts"    . ?d)
-					))))))
-
-))
-#+end_src
-
-#+RESULTS:
-| #s(mu4e-context Dixon (lambda nil (mu4e-message Entering context work)) (lambda nil (mu4e-message Leaving context work)) (lambda (msg) (when msg (mu4e-message-contact-field-matches msg '(:from :to :cc :bcc) mark@dixon.se))) ((user-mail-address . mark@dixon.se) (user-full-name . Mark Dixon) (mu4e-sent-folder . /dixon-gmail/[dixon].Sent Mail) (mu4e-drafts-folder . /dixon-gmail/[dixon].drafts) (mu4e-trash-folder . /dixon-gmail/[dixon].Trash) (mu4e-compose-signature concat Formal Signature |
-
-
-
-** Make things look and function a bit nicer
-
-Allow for different colors for each column in mu4e-headers view:
-
-#+begin_src emacs-lisp
-
-(cond ((eq system-type 'gnu-linux)
-           ;; Linux-specific code goes here.
-  (use-package mu4e-column-faces
-    :after mu4e
-    :config (mu4e-column-faces-mode))
-))
-
+(add-hook 'mu4e-mark-execute-pre-hook
+  (lambda (mark msg)
+    (cond ((member mark '(refile trash)) (mu4e-action-retag-message msg "-\\Inbox"))
+          ((equal mark 'flag) (mu4e-action-retag-message msg "\\Starred"))
+          ((equal mark 'unflag) (mu4e-action-retag-message msg "-\\Starred")))))
 
 #+end_src
 
 #+RESULTS:
+| lambda | (mark msg) | (cond ((member mark '(refile trash)) (mu4e-action-retag-message msg -\Inbox)) ((equal mark 'flag) (mu4e-action-retag-message msg \Starred)) ((equal mark 'unflag) (mu4e-action-retag-message msg -\Starred))) |
+
+
+
 
 
 
